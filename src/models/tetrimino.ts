@@ -116,4 +116,49 @@ export class Tetrimino {
     }
     return value;
   }
+
+  /**
+   * テトリミノを左に1つ移動．
+   *
+   * @return 移動後のTetriminoクラスのインスタンス
+   */
+  public moveLeft(): Tetrimino {
+    return new Tetrimino(this._type, this._x - 1, this._y, this._rotate);
+  }
+
+  /**
+   * テトリミノを右に1つ移動．
+   *
+   * @return 移動後のTetriminoクラスのインスタンス
+   */
+  public moveRight(): Tetrimino {
+    return new Tetrimino(this._type, this._x + 1, this._y, this._rotate);
+  }
+
+  /**
+   * テトリミノを下に1つ移動．
+   *
+   * @return 移動後のTetriminoクラスのインスタンス
+   */
+  public moveDown(): Tetrimino {
+    return new Tetrimino(this._type, this._x, this._y + 1, this._rotate);
+  }
+
+  /**
+   * テトリミノを上に1つ移動．
+   *
+   * @return 移動後のTetriminoクラスのインスタンス
+   */
+  public moveUp(): Tetrimino {
+    return new Tetrimino(this._type, this._x, this._y - 1, this._rotate);
+  }
+
+  /**
+   * テトリミノを90度回転する．
+   *
+   * @return 回転後のTetriminoクラスのインスタンス
+   */
+  public moveRotate(): Tetrimino {
+    return new Tetrimino(this._type, this._x, this._y, this._rotate + 1);
+  }
 }
