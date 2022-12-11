@@ -1,0 +1,20 @@
+{
+    "compilerOptions": {
+        // トランスパイルされたJavaScriptファイルの出力先
+        "outDir": "./dist/",
+        //トランスパイルされたJavaScriptファイルに対応するTypeScriptファイルのマップ情報を出力する
+        "sourceMap": true,
+        // トランスパイルされるJavaScriptファイルのモジュールシステム
+        "module": "es6",
+        // モジュールの解決方法
+        "moduleResolution": "node",
+        // トランスパイルされるJavaScriptファイルのECMAScript のバージョン
+        "target": "es5",
+        // JavaScriptファイルもトランスパイルするかどうか
+        "allowJs": true,
+    },
+    // トランスパイルするTypeScriptファイルのパス
+    "include": [
+        "./src/**/*"
+    ]
+}
