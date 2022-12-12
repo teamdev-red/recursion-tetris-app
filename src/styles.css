@@ -1,4 +1,22 @@
-h1 {
-  color: white;
-  background-color: black;
+p {
+  margin: 0;
+}
+
+.bg-lightblue {
+  background-color: #bddfff;
+}
+
+.field {
+  width: 300px;
+  height: 600px;
+}
+
+.score {
+  width: 200px;
+  height: 90px;
+}
+
+.next {
+  width: 150px;
+  height: 200px;
 }
