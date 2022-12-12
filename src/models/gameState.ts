@@ -1,6 +1,17 @@
 import { Field } from "./field";
 import { Tetrimino } from "./tetrimino";
 
+/**
+ * テトリスのゲーム状態を管理するクラス
+ * 落下中のテトリミノ，フィールドの状態，スコア，ゲームオーバーかどうかなどを管理し，画面に描画する．
+ *
+ * @param {CanvasRenderingContext2D} context キャンバスのコンテキスト
+ * @param {Field} field テトリスのフィールド
+ * @param {Tetrimino} currentTetrimino 落下中のテトリミノ
+ * @param {number} score テトリスのスコア
+ * @param {boolean} gameOver ゲームオーバーかどうか
+ * @param {number} BLOCK_SIZE 1ブロックのサイズ (px)
+ */
 export class GameState {
   private _context: CanvasRenderingContext2D;
   private _field: Field;
@@ -8,18 +19,53 @@ export class GameState {
   private _score: number;
   private _gameOver: boolean;
 
+  /**
+   * 1ブロックのサイズ (px)
+   */
   private static readonly BLOCK_SIZE = 30;
+
+  /**
+   * フィールドの横方向のブロック数
+   */
   private static readonly FIELD_COL = 10;
+
+  /**
+   * フィールドの縦方向のブロック数
+   */
   private static readonly FIELD_ROW = 20;
+
+  /**
+   * テトリミノのx座標の初期値
+   */
   private static readonly START_X = GameState.FIELD_COL / 2;
+
+  /**
+   * テトリミノのy座標の初期値
+   */
   private static readonly START_Y = 0;
+
+  /**
+   * 画面の横幅 (px)
+   */
   private static readonly SCREEN_W = GameState.BLOCK_SIZE * GameState.FIELD_COL;
+
+  /**
+   * 画面の縦幅 (px)
+   */
   private static readonly SCREEN_H = GameState.BLOCK_SIZE * GameState.FIELD_ROW;
+
+  /**
+   * テトリミノを1行消したときのスコアの増加量
+   */
   private static readonly SCORE_INCREASE = 100;
+
+  /**
+   * テトリミノの落下速度 (ms)
+   */
   private static readonly GAME_SPEED = 300;
 
   /**
-   * @param {HTMLCanvasElement} canvas - ゲームをレンダリングするキャンバス要素
+   * @param {HTMLCanvasElement} canvas ゲームをレンダリングするキャンバス要素
    */
   public constructor(canvas: HTMLCanvasElement) {
     canvas.width = GameState.SCREEN_W;
@@ -43,6 +89,7 @@ export class GameState {
 
   /**
    * フィールドを初期化する
+   *
    * @returns {Field} 初期化されたフィールド
    */
   private initializeField(): Field {
@@ -51,6 +98,7 @@ export class GameState {
 
   /**
    * テトリミノを初期化する
+   *
    * @returns {Tetrimino} 初期化されたテトリミノ
    */
   private initializeTetrimino(): Tetrimino {
@@ -88,11 +136,11 @@ export class GameState {
   }
 
   /**
-   * ゲーム画面ブロックを描画する
+   * ゲーム画面にブロックを描画する
    *
-   * @param {number[][]} blocks - 描画するブロック
-   * @param {number} [offsetX=0] - ブロックを描画するときに使用する x オフセット
-   * @param {number} [offsetY=0] - ブロックを描画するときに使用する y オフセット
+   * @param {number[][]} blocks 描画するブロック
+   * @param {number} [offsetX=0] ブロックを描画するときに使用する x オフセット
+   * @param {number} [offsetY=0] ブロックを描画するときに使用する y オフセット
    */
   private drawBlocks(blocks: number[][], offsetX = 0, offsetY = 0): void {
     for (let y = 0; y < blocks.length; y++) {
@@ -121,8 +169,9 @@ export class GameState {
 
   /**
    * 指定した位置に 1 つのブロックを描画する．ブロックの色は赤で，枠線は黒で描画する．
-   * @param {number} x - ブロックの x 座標
-   * @param {number} y - ブロックの y 座標
+   *
+   * @param {number} x ブロックの x 座標
+   * @param {number} y ブロックの y 座標
    */
   private drawBlock(x: number, y: number): void {
     let px = x * GameState.BLOCK_SIZE;
@@ -188,6 +237,7 @@ export class GameState {
 
   /**
    * テトリミノが移動可能かどうかをチェックし，移動可能なら移動させる
+   *
    * @returns {Tetrimino} 移動後のテトリミノ
    */
   private checkAndMoveLeft(): Tetrimino {
@@ -220,8 +270,9 @@ export class GameState {
 
   /**
    * 指定したテトリミノを新しい位置に移動できるかどうかをチェックする
-   * @param {Tetrimino} newTetrimino - チェックするテトリミノ
-   * @returns {boolean} - テトリミノを移動できる場合は true、それ以外の場合は false。
+   *
+   * @param {Tetrimino} newTetrimino チェックするテトリミノ
+   * @returns {boolean} テトリミノを移動できる場合は true、それ以外の場合は false。
    */
   private checkMove(newTetrimino: Tetrimino): boolean {
     return (
@@ -231,7 +282,9 @@ export class GameState {
   }
 
   /**
-   * 移動可能かどうかを判定する
+   * テトリミノの移動先がフィールド内かどうかをチェックする
+   * 移動先が壁である場合はfalseを返し，移動先がフィールド内である場合はtrueを返す
+   *
    * @param {Tetrimino} newTetrimino 移動先のテトリミノ
    * @return {boolean} 移動可能かどうか
    */
@@ -257,8 +310,10 @@ export class GameState {
 
   /**
    * テトリミノの重なりの有無を判定する
+   *
    * @param {Tetrimino} newTetrimino 移動先のテトリミノ
-   * @return {boolean} 重なっていないかどうか
+   * @return {boolean} 重なっていないかどうか，重なっている場合はfalseを返す
+   *                  重なっていない場合はtrueを返す
    */
   private checkMoveOverlapping(newTetrimino: Tetrimino): boolean {
     for (let y = 0; y < Tetrimino.TETRIMINO_SIZE; y++) {
@@ -292,12 +347,13 @@ export class GameState {
 
   /**
    * テトリミノが揃ったか確認し，揃った行を削除する．
-   * 1行揃うごとにSCORE_INCREASE点加算し
-   * スコアを返す
-   * @returns {number} - スコア
+   * 1行揃うごとにSCORE_INCREASE点加算しスコアを返す
+   *
+   * @returns {number} スコア
    */
   private checkLine(): number {
     let line_count = 0;
+    let score = 0;
     for (let y = 0; y < GameState.FIELD_ROW; y++) {
       let fill = true;
       for (let x = 0; x < GameState.FIELD_COL; x++) {
@@ -312,17 +368,17 @@ export class GameState {
         y--;
       }
     }
-    if (line_count) {
-      return line_count * GameState.SCORE_INCREASE;
-    }
-    return 0;
+    score = line_count ? line_count * GameState.SCORE_INCREASE : 0;
+    return score;
   }
 
+
   /**
-   * 指定した行を削除し，上の行を下に詰める
-   * @param {number} y - 削除する行
+   * 指定した行を削除する
+   *
+   * @param {number} y 削除する行
    */
-  private clearLine(y: number) {
+  private clearLine(y: number): void {
     for (let ny = y; ny > 0; ny--) {
       for (let nx = 0; nx < GameState.FIELD_COL; nx++) {
         this._field.value[ny][nx] = this._field.value[ny - 1][nx];
