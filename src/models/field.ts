@@ -1,27 +1,30 @@
+/**
+ * テトリスフィールドのクラス
+ * テトリスフィールドの値を保持する
+ * @param {number[][]} value テトリスフィールドの値，col×rowの2次元配列．
+ */
 export class Field {
-  /**
-   * テトリスフィールドの値
-   */
   private _value: number[][];
   public get value(): number[][] {
     return this._value;
   }
 
   /**
-   * @param col テトリスフィールドの列数
-   * @param row テトリスフィールドの行数
+   * @param {number} col テトリスフィールドの列数
+   * @param {number} row テトリスフィールドの行数
    */
-  constructor(col: number, row: number) {
+  public constructor(col: number, row: number) {
     if (col < 1 || row < 1) {
-      throw new Error('フィールドのサイズは必ず1以上にしてください');
+      throw new Error("フィールドのサイズは必ず1以上にしてください");
     }
     this._value = this.generateField(col, row);
   }
 
   /**
    * テトリスフィールドの値を初期化
-   * @param col テトリスフィールドの列数
-   * @param row テトリスフィールドの行数
+   * @param {number} col テトリスフィールドの列数
+   * @param {number} row テトリスフィールドの行数
+   * @return {number[][]} テトリスフィールドの値
    */
   private generateField(col: number, row: number): number[][] {
     let field = [];
