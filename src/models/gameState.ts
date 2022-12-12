@@ -199,13 +199,15 @@ export class GameState {
     if (this.checkMove(newTetrimino)) this._currentTetrimino = newTetrimino;
     else {
       this.fixTetrimino();
-      this._score = this.checkLine();
+      this._score += this.checkLine();
+      console.log(this._score);
       newTetrimino = this.initializeTetrimino();
       if (!this.checkMove(newTetrimino)) this._gameOver = true;
       this._currentTetrimino = newTetrimino;
     }
     this.drawField();
   }
+
   /**
    * キー入力に応じてテトリミノを移動させる
    */
