@@ -1,6 +1,23 @@
+/**
+ * Tetrisのテトリミノを表すクラス
+ *
+ * @param {number} type テトリミノのタイプ，0: Z, 1: S, 2: J, 3: L, 4: T, 5: I, 6: O
+ * @param {number} x x座標
+ * @param {number} y y座標
+ * @param {number[][]} value テトリミノの値
+ * @param {number} rotate テトリミノの回転角度，0: 0度, 1: 90度, 2: 180度, 3: 270度
+ */
 export class Tetrimino {
+  /**
+   * テトリミノのサイズ，回転後のテトリミノを考慮して4x4のサイズにしている
+   */
   public static readonly TETRIMINO_SIZE = 4;
-  public static readonly TETRIMINO_TYPES = [
+  /**
+   * テトリミノの形
+   * 2次元配列で表現する
+   * 0: 空白，1: ブロック
+   */
+  private static readonly TETRIMINO_TYPES = [
     // Z
     [
       [0, 0, 0, 0],
@@ -53,15 +70,10 @@ export class Tetrimino {
   ];
 
   /**
-   * Tetrisのテトリミノを表すクラス
-   *
-   * @param type テトリミノのタイプ，0: Z, 1: S, 2: J, 3: L, 4: T, 5: I, 6: O
-   * @param x x座標
-   * @param y y座標
-   * @param value テトリミノの形
-   * @param rotate テトリミノの回転角度，0: 0度, 1: 90度, 2: 180度, 3: 270度
+   * テトリミノのタイプの数
+   * 0: Z, 1: S, 2: J, 3: L, 4: T, 5: I, 6: O の7種類
    */
-  public static TETRIMINO_TYPES_COUNT = Tetrimino.TETRIMINO_TYPES.length;
+  public static readonly TETRIMINO_TYPES_COUNT = Tetrimino.TETRIMINO_TYPES.length;
 
   private _type: number;
   public get type(): number {
@@ -97,13 +109,15 @@ export class Tetrimino {
   }
 
   /**
-   * this.rotateの値に応じてテトリミノの値を回転させる．
+   * rotateの値に応じてテトリミノの値を回転させる．
+   * コンストラクタ内で呼ばれる
    * 計算量がO(n^2)のため，改善の余地あり．
-   * @return 回転後のテトリミノの値
+   *
+   * @return {number[][]} 回転後のテトリミノの値
    */
   private generateTetriminoValue(): number[][] {
-    let value = Tetrimino.TETRIMINO_TYPES[this.type];
-    for (let i = 0; i < this.rotate; i++) {
+    let value = Tetrimino.TETRIMINO_TYPES[this._type];
+    for (let i = 0; i < this._rotate; i++) {
       const newValue = [];
       for (let j = 0; j < Tetrimino.TETRIMINO_SIZE; j++) {
         const newRow = [];
@@ -120,7 +134,7 @@ export class Tetrimino {
   /**
    * テトリミノを左に1つ移動．
    *
-   * @return 移動後のTetriminoクラスのインスタンス
+   * @return {Tetrimino} 移動後のTetriminoクラスのインスタンス
    */
   public moveLeft(): Tetrimino {
     return new Tetrimino(this._type, this._x - 1, this._y, this._rotate);
@@ -129,7 +143,7 @@ export class Tetrimino {
   /**
    * テトリミノを右に1つ移動．
    *
-   * @return 移動後のTetriminoクラスのインスタンス
+   * @return {Tetrimino} 移動後のTetriminoクラスのインスタンス
    */
   public moveRight(): Tetrimino {
     return new Tetrimino(this._type, this._x + 1, this._y, this._rotate);
