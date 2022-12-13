@@ -88,13 +88,13 @@ export class GameState {
    * ゲームを開始する
    */
   public gameStart(): void {
-    this._gameOver = false;
+    this._gameStatus = GameState.GAME_STATUS.PLAYING;
     this._score = 0;
     this._field = this.initializeField();
     this._currentTetrimino = this.initializeTetrimino();
     this.drawField();
     this.setKeydownHandler();
-    this.setDropTetriminoInterval();
+    this._intervalId = this.setDropTetriminoInterval();
   }
 
   /**
@@ -243,8 +243,10 @@ export class GameState {
   /**
    * GAME_SPEEDの間隔でテトリミノを落下させる
    */
-  private setDropTetriminoInterval(): void {
-    setInterval(() => this.dropTetrimino(), GameState.GAME_SPEED);
+  private setDropTetriminoInterval(): NodeJS.Timer {
+    if (this._gameStatus !== GameState.GAME_STATUS.PLAYING)
+      return this._intervalId;
+    return setInterval(() => this.dropTetrimino(), GameState.GAME_SPEED);
   }
 
   /**
