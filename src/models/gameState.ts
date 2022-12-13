@@ -133,7 +133,7 @@ export class GameState {
       this._currentTetrimino.x,
       this._currentTetrimino.y
     );
-    if (this._gameOver) {
+    if (this._gameStatus === GameState.GAME_STATUS.GAMEOVER) {
       this.drawGameOverScreen();
     }
   }
@@ -204,7 +204,7 @@ export class GameState {
    * また，一番下に来たときには新しいテトリミノを生成する．
    */
   private dropTetrimino(): void {
-    if (this._gameOver) return;
+    if (this._gameStatus !== GameState.GAME_STATUS.PLAYING) return;
     let newTetrimino = this._currentTetrimino.moveDown();
     if (this.checkMove(newTetrimino)) this._currentTetrimino = newTetrimino;
     else {
@@ -212,7 +212,8 @@ export class GameState {
       this._score += this.checkLine();
       console.log(this._score);
       newTetrimino = this.initializeTetrimino();
-      if (!this.checkMove(newTetrimino)) this._gameOver = true;
+      if (!this.checkMove(newTetrimino))
+        this._gameStatus = GameState.GAME_STATUS.GAMEOVER;
       this._currentTetrimino = newTetrimino;
     }
     this.drawField();
@@ -223,7 +224,7 @@ export class GameState {
    */
   private setKeydownHandler(): void {
     document.onkeydown = (e) => {
-      if (this._gameOver) return;
+      if (this._gameStatus !== GameState.GAME_STATUS.PLAYING) return;
 
       if (e.key == "ArrowLeft") {
         this._currentTetrimino = this.checkAndMoveLeft();
@@ -242,6 +243,8 @@ export class GameState {
 
   /**
    * GAME_SPEEDの間隔でテトリミノを落下させる
+   * ゲームを一時停止機能を追加する際に，clearIntervalで停止させるようにするため，intervalIdを返す
+   * ゲームを一時停止機能を追加する際に，clearIntervalで停止させるようにするため，intervalIdを返す
    */
   private setDropTetriminoInterval(): NodeJS.Timer {
     if (this._gameStatus !== GameState.GAME_STATUS.PLAYING)
