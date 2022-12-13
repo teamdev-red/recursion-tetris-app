@@ -98,6 +98,27 @@ export class GameState {
   }
 
   /**
+   * ゲームを一時停止する
+   */
+  public gamePause(): void {
+    this._gameStatus = GameState.GAME_STATUS.PAUSE;
+    clearInterval(this._intervalId);
+    this.drawField();
+    this._intervalId = this.setDropTetriminoInterval();
+  }
+
+  /**
+   * ゲームを再開する
+   */
+  public gameRestart(): void {
+    this._gameStatus = GameState.GAME_STATUS.PLAYING;
+    clearInterval(this._intervalId);
+    this.drawField();
+    this.setKeydownHandler();
+    this._intervalId = this.setDropTetriminoInterval();
+  }
+
+  /**
    * フィールドを初期化する
    *
    * @returns {Field} 初期化されたフィールド
@@ -244,7 +265,6 @@ export class GameState {
   /**
    * GAME_SPEEDの間隔でテトリミノを落下させる
    * ゲームを一時停止機能を追加する際に，clearIntervalで停止させるようにするため，intervalIdを返す
-   * ゲームを一時停止機能を追加する際に，clearIntervalで停止させるようにするため，intervalIdを返す
    */
   private setDropTetriminoInterval(): NodeJS.Timer {
     if (this._gameStatus !== GameState.GAME_STATUS.PLAYING)
@@ -269,8 +289,8 @@ export class GameState {
   }
 
   //private checkAndMoveUp() {
-    // とりあえず今は何もしない
-    // 今後，新しい処理を追加する可能性あり
+  // とりあえず今は何もしない
+  // 今後，新しい処理を追加する可能性あり
   //}
 
   private checkAndMoveDown(): Tetrimino {
@@ -388,7 +408,6 @@ export class GameState {
     score = line_count ? line_count * GameState.SCORE_INCREASE : 0;
     return score;
   }
-
 
   /**
    * 指定した行を削除する
