@@ -9,15 +9,16 @@ import { Tetrimino } from "./tetrimino";
  * @param {Field} field テトリスのフィールド
  * @param {Tetrimino} currentTetrimino 落下中のテトリミノ
  * @param {number} score テトリスのスコア
- * @param {boolean} gameOver ゲームオーバーかどうか
- * @param {number} BLOCK_SIZE 1ブロックのサイズ (px)
+ * @param {number} gameStatus 現在のゲームの状態，0: ゲーム中，1: 一時停止，2: ゲームオーバー
+ * @param {NodeJS.Timer} intervalId ゲームのインターバルID，ゲームオーバー時もしくは，ゲーム一時停止時にインターバルをクリアするために使用
  */
 export class GameState {
   private _context: CanvasRenderingContext2D;
   private _field: Field;
   private _currentTetrimino: Tetrimino;
   private _score: number;
-  private _gameOver: boolean;
+  private _gameStatus: number;
+  private _intervalId: NodeJS.Timer;
 
   /**
    * 1ブロックのサイズ (px)
@@ -63,6 +64,15 @@ export class GameState {
    * テトリミノの落下速度 (ms)
    */
   private static readonly GAME_SPEED = 300;
+
+  /**
+   * ゲームの状態を表す定数
+   */
+  private static readonly GAME_STATUS = {
+    PLAYING: 0,
+    PAUSE: 1,
+    GAMEOVER: 2,
+  };
 
   /**
    * @param {HTMLCanvasElement} canvas ゲームをレンダリングするキャンバス要素
