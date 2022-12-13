@@ -24,25 +24,37 @@
 
   <body>
     <div class="bg-lightblue vh-100">
-      <!-- タイトルと停止ボタン -->
-      <div class="d-flex justify-content-center align-items-center">
-        <h1 class="text-center py-3 me-3 mb-0">TETRIS</h1>
-        <i class="fa-sharp fa-solid fa-circle-pause fa-2x text-secondary clickable"></i>
-      </div>
+      <div class="container">
+        <div class="row">
+          <!-- 左側：スコア表示エリア -->
+          <div class="col-4">
+            <div class="d-flex justify-content-end">
+              <div class="score bg-dark text-white p-2">
+                <p class="fs-4">SCORE</p>
+                <p class="fs-2 text-end">0</p>
+              </div>
+            </div>
+          </div>
 
-      <div class="d-flex justify-content-center">
-        <!-- スコア表示エリア -->
-        <div class="score bg-dark text-white p-2">
-          <p class="fs-4">SCORE</p>
-          <p class="fs-2 text-end">0</p>
-        </div>
+          <!-- 中央：メイン画面 -->
+          <div class="col-4">
+            <div>
+              <!-- タイトルと停止ボタン -->
+              <div class="d-flex justify-content-center align-items-center">
+                <h1 class="text-center py-3 me-3 mb-0">TETRIS</h1>
+                <i class="fa-sharp fa-solid fa-circle-pause fa-2x text-secondary clickable"></i>
+              </div>
+              <!-- ゲーム画面 -->
+              <div class="field bg-dark mx-auto"></div>
+            </div>
+          </div>
 
-        <!-- ゲーム画面 -->
-        <div class="field bg-dark mx-5"></div>
-
-        <!-- 次のテトリミノ表示エリア -->
-        <div class="next bg-dark p-2">
-          <p class="fs-4 text-center text-white">NEXT</p>
+          <!-- 右側：次のテトリミノ表示エリア -->
+          <div class="col-4">
+            <div class="next bg-dark p-2">
+              <p class="fs-4 text-center text-white">NEXT</p>
+            </div>
+          </div>
         </div>
       </div>
     </div>

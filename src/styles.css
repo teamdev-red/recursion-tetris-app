@@ -14,13 +14,15 @@ p {
 .score {
   width: 200px;
   height: 90px;
+  margin-top: 78px;
 }
 
 .next {
   width: 150px;
   height: 200px;
+  margin-top: 78px;
 }
 
-.clickable{
+.clickable {
   cursor: pointer;
 }
