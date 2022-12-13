@@ -1,3 +1,5 @@
+import "./styles.css";
+
 import { GameState } from "./models/gameState";
 
 let app = document.querySelector("#app");
@@ -6,4 +8,3 @@ app.appendChild(can);
 
 const gameState = new GameState(can);
 gameState.gameStart();
-
