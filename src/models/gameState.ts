@@ -20,6 +20,21 @@ export class GameState {
   private _gameOver: boolean;
 
   /**
+   * blockの色
+   * blockの数値の値に対応する
+   */
+  private static readonly BLOCK_COLORS = [
+    "#FFF", // 空白
+    "#00FF57", // Z
+    "#FAFF00", // S
+    "#FF9900", // J
+    "#00D1FF", // L
+    "#0000FF", // T
+    "#FF0000", // I
+    "#8F00FF", // O
+  ];
+
+  /**
    * 1ブロックのサイズ (px)
    */
   private static readonly BLOCK_SIZE = 30;
