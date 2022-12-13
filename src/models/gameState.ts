@@ -21,6 +21,21 @@ export class GameState {
   private _intervalId: NodeJS.Timer;
 
   /**
+   * blockの色
+   * blockの数値の値に対応する
+   */
+  private static readonly BLOCK_COLORS = [
+    "#FFF", // 空白
+    "#00FF57", // Z
+    "#FAFF00", // S
+    "#FF9900", // J
+    "#00D1FF", // L
+    "#0000FF", // T
+    "#FF0000", // I
+    "#8F00FF", // O
+  ];
+
+  /**
    * 1ブロックのサイズ (px)
    */
   private static readonly BLOCK_SIZE = 30;
@@ -177,7 +192,12 @@ export class GameState {
     for (let y = 0; y < blocks.length; y++) {
       for (let x = 0; x < blocks[y].length; x++) {
         if (blocks[y][x]) {
-          this.drawBlock(x + offsetX, y + offsetY);
+          this.drawBlock(
+            x + offsetX,
+            y + offsetY,
+            // blockの色とGameState.BLOCK_COLORSのindexを対応させている
+            GameState.BLOCK_COLORS[blocks[y][x]]
+          );
         }
       }
     }
@@ -199,15 +219,15 @@ export class GameState {
   }
 
   /**
-   * 指定した位置に 1 つのブロックを描画する．ブロックの色は赤で，枠線は黒で描画する．
+   * 指定した位置に 1 つのブロックを描画する．ブロックの色は引数で指定し，枠線は黒にする．
    *
    * @param {number} x ブロックの x 座標
    * @param {number} y ブロックの y 座標
    */
-  private drawBlock(x: number, y: number): void {
+  private drawBlock(x: number, y: number, color: string): void {
     let px = x * GameState.BLOCK_SIZE;
     let py = y * GameState.BLOCK_SIZE;
-    this._context.fillStyle = "red";
+    this._context.fillStyle = color;
     this._context.fillRect(px, py, GameState.BLOCK_SIZE, GameState.BLOCK_SIZE);
     this._context.strokeStyle = "black";
     this._context.strokeRect(
@@ -231,7 +251,6 @@ export class GameState {
     else {
       this.fixTetrimino();
       this._score += this.checkLine();
-      console.log(this._score);
       newTetrimino = this.initializeTetrimino();
       if (!this.checkMove(newTetrimino))
         this._gameStatus = GameState.GAME_STATUS.GAMEOVER;
@@ -376,7 +395,7 @@ export class GameState {
         if (this._currentTetrimino.value[y][x]) {
           this._field.value[this._currentTetrimino.y + y][
             this._currentTetrimino.x + x
-          ] = 1;
+          ] = this._currentTetrimino.value[y][x];
         }
       }
     }
