@@ -275,6 +275,8 @@ export class GameState {
       } else if (e.key == "ArrowDown") {
         this._currentTetrimino = this.checkAndMoveDown();
       } else if (e.key == " ") {
+        let sound = new Audio('./rotation.mp3');
+        sound.play();
         this._currentTetrimino = this.checkAndRotate();
       }
       this.drawField();
