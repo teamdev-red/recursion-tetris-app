@@ -9,7 +9,7 @@ export const createGameArea = (): HTMLDivElement => {
   container.innerHTML = `
     <div class="d-flex justify-content-center align-items-center">
       <h1 class="text-center py-3 mr-3 mb-0">TETRIS</h1>
-      <i class="fa-solid fa-circle-pause fa-2x text-secondary clickable"></i>
+      <i class="fa-solid fa-circle-pause fa-2x text-secondary clickable" data-toggle="modal" data-target="#pausedModal"></i>
     </div>
     <div class="field bg-dark mx-auto"></div>
   `;
