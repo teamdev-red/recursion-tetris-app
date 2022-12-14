@@ -11,6 +11,7 @@ import { Tetrimino } from "./tetrimino";
  * @param {number} score テトリスのスコア
  * @param {number} gameStatus 現在のゲームの状態，0: ゲーム中，1: 一時停止，2: ゲームオーバー
  * @param {NodeJS.Timer} intervalId ゲームのインターバルID，ゲームオーバー時もしくは，ゲーム一時停止時にインターバルをクリアするために使用
+ * @param {number} gamespeed テトリミノの落下スピード
  */
 export class GameState {
   private _context: CanvasRenderingContext2D;
@@ -19,6 +20,7 @@ export class GameState {
   private _score: number;
   private _gameStatus: number;
   private _intervalId: NodeJS.Timer;
+  private _gamespeed: number;
 
   /**
    * blockの色
@@ -78,7 +80,7 @@ export class GameState {
   /**
    * テトリミノの落下速度 (ms)
    */
-  private static readonly GAME_SPEED = 300;
+  // private static readonly GAME_SPEED = 300;
 
   /**
    * ゲームの状態を表す定数
@@ -105,6 +107,7 @@ export class GameState {
   public gameStart(): void {
     this._gameStatus = GameState.GAME_STATUS.PLAYING;
     this._score = 0;
+    this._gamespeed = 100;
     this._field = this.initializeField();
     this._currentTetrimino = this.initializeTetrimino();
     this.drawField();
@@ -288,7 +291,7 @@ export class GameState {
   private setDropTetriminoInterval(): NodeJS.Timer {
     if (this._gameStatus !== GameState.GAME_STATUS.PLAYING)
       return this._intervalId;
-    return setInterval(() => this.dropTetrimino(), GameState.GAME_SPEED);
+    return setInterval(() => this.dropTetrimino(), this._gamespeed);
   }
 
   /**
@@ -425,6 +428,12 @@ export class GameState {
       }
     }
     score = line_count ? line_count * GameState.SCORE_INCREASE : 0;
+
+    if (line_count > 0 && this._gamespeed > 100) {
+      this._gamespeed -= 10 * line_count
+      this.gameRestart();
+    }
+
     return score;
   }
 
