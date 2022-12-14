@@ -9,15 +9,31 @@ import { Tetrimino } from "./tetrimino";
  * @param {Field} field テトリスのフィールド
  * @param {Tetrimino} currentTetrimino 落下中のテトリミノ
  * @param {number} score テトリスのスコア
- * @param {boolean} gameOver ゲームオーバーかどうか
- * @param {number} BLOCK_SIZE 1ブロックのサイズ (px)
+ * @param {number} gameStatus 現在のゲームの状態，0: ゲーム中，1: 一時停止，2: ゲームオーバー
+ * @param {NodeJS.Timer} intervalId ゲームのインターバルID，ゲームオーバー時もしくは，ゲーム一時停止時にインターバルをクリアするために使用
  */
 export class GameState {
   private _context: CanvasRenderingContext2D;
   private _field: Field;
   private _currentTetrimino: Tetrimino;
   private _score: number;
-  private _gameOver: boolean;
+  private _gameStatus: number;
+  private _intervalId: NodeJS.Timer;
+
+  /**
+   * blockの色
+   * blockの数値の値に対応する
+   */
+  private static readonly BLOCK_COLORS = [
+    "#FFF", // 空白
+    "#00FF57", // Z
+    "#FAFF00", // S
+    "#FF9900", // J
+    "#00D1FF", // L
+    "#0000FF", // T
+    "#FF0000", // I
+    "#8F00FF", // O
+  ];
 
   /**
    * 1ブロックのサイズ (px)
@@ -65,6 +81,15 @@ export class GameState {
   private static readonly GAME_SPEED = 300;
 
   /**
+   * ゲームの状態を表す定数
+   */
+  private static readonly GAME_STATUS = {
+    PLAYING: 0,
+    PAUSE: 1,
+    GAMEOVER: 2,
+  };
+
+  /**
    * @param {HTMLCanvasElement} canvas ゲームをレンダリングするキャンバス要素
    */
   public constructor(canvas: HTMLCanvasElement) {
@@ -78,13 +103,34 @@ export class GameState {
    * ゲームを開始する
    */
   public gameStart(): void {
-    this._gameOver = false;
+    this._gameStatus = GameState.GAME_STATUS.PLAYING;
     this._score = 0;
     this._field = this.initializeField();
     this._currentTetrimino = this.initializeTetrimino();
     this.drawField();
     this.setKeydownHandler();
-    this.setDropTetriminoInterval();
+    this._intervalId = this.setDropTetriminoInterval();
+  }
+
+  /**
+   * ゲームを一時停止する
+   */
+  public gamePause(): void {
+    this._gameStatus = GameState.GAME_STATUS.PAUSE;
+    clearInterval(this._intervalId);
+    this.drawField();
+    this._intervalId = this.setDropTetriminoInterval();
+  }
+
+  /**
+   * ゲームを再開する
+   */
+  public gameRestart(): void {
+    this._gameStatus = GameState.GAME_STATUS.PLAYING;
+    clearInterval(this._intervalId);
+    this.drawField();
+    this.setKeydownHandler();
+    this._intervalId = this.setDropTetriminoInterval();
   }
 
   /**
@@ -123,7 +169,7 @@ export class GameState {
       this._currentTetrimino.x,
       this._currentTetrimino.y
     );
-    if (this._gameOver) {
+    if (this._gameStatus === GameState.GAME_STATUS.GAMEOVER) {
       this.drawGameOverScreen();
     }
   }
@@ -146,7 +192,12 @@ export class GameState {
     for (let y = 0; y < blocks.length; y++) {
       for (let x = 0; x < blocks[y].length; x++) {
         if (blocks[y][x]) {
-          this.drawBlock(x + offsetX, y + offsetY);
+          this.drawBlock(
+            x + offsetX,
+            y + offsetY,
+            // blockの色とGameState.BLOCK_COLORSのindexを対応させている
+            GameState.BLOCK_COLORS[blocks[y][x]]
+          );
         }
       }
     }
@@ -168,15 +219,15 @@ export class GameState {
   }
 
   /**
-   * 指定した位置に 1 つのブロックを描画する．ブロックの色は赤で，枠線は黒で描画する．
+   * 指定した位置に 1 つのブロックを描画する．ブロックの色は引数で指定し，枠線は黒にする．
    *
    * @param {number} x ブロックの x 座標
    * @param {number} y ブロックの y 座標
    */
-  private drawBlock(x: number, y: number): void {
+  private drawBlock(x: number, y: number, color: string): void {
     let px = x * GameState.BLOCK_SIZE;
     let py = y * GameState.BLOCK_SIZE;
-    this._context.fillStyle = "red";
+    this._context.fillStyle = color;
     this._context.fillRect(px, py, GameState.BLOCK_SIZE, GameState.BLOCK_SIZE);
     this._context.strokeStyle = "black";
     this._context.strokeRect(
@@ -194,15 +245,15 @@ export class GameState {
    * また，一番下に来たときには新しいテトリミノを生成する．
    */
   private dropTetrimino(): void {
-    if (this._gameOver) return;
+    if (this._gameStatus !== GameState.GAME_STATUS.PLAYING) return;
     let newTetrimino = this._currentTetrimino.moveDown();
     if (this.checkMove(newTetrimino)) this._currentTetrimino = newTetrimino;
     else {
       this.fixTetrimino();
       this._score += this.checkLine();
-      console.log(this._score);
       newTetrimino = this.initializeTetrimino();
-      if (!this.checkMove(newTetrimino)) this._gameOver = true;
+      if (!this.checkMove(newTetrimino))
+        this._gameStatus = GameState.GAME_STATUS.GAMEOVER;
       this._currentTetrimino = newTetrimino;
     }
     this.drawField();
@@ -213,7 +264,7 @@ export class GameState {
    */
   private setKeydownHandler(): void {
     document.onkeydown = (e) => {
-      if (this._gameOver) return;
+      if (this._gameStatus !== GameState.GAME_STATUS.PLAYING) return;
 
       if (e.key == "ArrowLeft") {
         this._currentTetrimino = this.checkAndMoveLeft();
@@ -232,9 +283,12 @@ export class GameState {
 
   /**
    * GAME_SPEEDの間隔でテトリミノを落下させる
+   * ゲームを一時停止機能を追加する際に，clearIntervalで停止させるようにするため，intervalIdを返す
    */
-  private setDropTetriminoInterval(): void {
-    setInterval(() => this.dropTetrimino(), GameState.GAME_SPEED);
+  private setDropTetriminoInterval(): NodeJS.Timer {
+    if (this._gameStatus !== GameState.GAME_STATUS.PLAYING)
+      return this._intervalId;
+    return setInterval(() => this.dropTetrimino(), GameState.GAME_SPEED);
   }
 
   /**
@@ -253,6 +307,7 @@ export class GameState {
     return this._currentTetrimino;
   }
 
+
   /**
    * テトリミノを一番下まで落とす
    * @returns {Tetrimino} 最下段まで落としたテトリミノ
@@ -263,6 +318,7 @@ export class GameState {
     }
     return this._currentTetrimino;
   }
+
 
   private checkAndMoveDown(): Tetrimino {
     let newTetrimino = this._currentTetrimino.moveDown();
@@ -347,7 +403,7 @@ export class GameState {
         if (this._currentTetrimino.value[y][x]) {
           this._field.value[this._currentTetrimino.y + y][
             this._currentTetrimino.x + x
-          ] = 1;
+          ] = this._currentTetrimino.value[y][x];
         }
       }
     }
