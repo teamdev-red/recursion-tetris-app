@@ -270,8 +270,8 @@ export class GameState {
         this._currentTetrimino = this.checkAndMoveLeft();
       } else if (e.key == "ArrowRight") {
         this._currentTetrimino = this.checkAndMoveRight();
-        //} else if (e.key == "ArrowUp") {
-        //this._currentTetrimino = this.checkAndMoveUp();
+      } else if (e.key == "ArrowUp") {
+        this._currentTetrimino = this.hardDrop();
       } else if (e.key == "ArrowDown") {
         this._currentTetrimino = this.checkAndMoveDown();
       } else if (e.key == " ") {
@@ -307,10 +307,18 @@ export class GameState {
     return this._currentTetrimino;
   }
 
-  //private checkAndMoveUp() {
-  // とりあえず今は何もしない
-  // 今後，新しい処理を追加する可能性あり
-  //}
+
+  /**
+   * テトリミノを一番下まで落とす
+   * @returns {Tetrimino} 最下段まで落としたテトリミノ
+   */
+  private hardDrop(): Tetrimino {
+    while(this.checkAndMoveDown() != this._currentTetrimino){
+      this._currentTetrimino = this.checkAndMoveDown();
+    }
+    return this._currentTetrimino;
+  }
+
 
   private checkAndMoveDown(): Tetrimino {
     let newTetrimino = this._currentTetrimino.moveDown();
