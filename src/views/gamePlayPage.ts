@@ -3,8 +3,8 @@ import { createNextArea } from '../components/nextArea';
 import { createScoreArea } from '../components/scoreArea';
 
 /**
- * ゲーム画面のページを作成する関数
- * @return {HTMLDivElement} ゲーム画面ののdiv要素
+ * ゲーム画面ページを作成する関数
+ * @return {HTMLDivElement} ゲーム画面ページ全体のdiv要素
  */
 export const createGamePlayPage = (): HTMLDivElement => {
   let container = document.createElement('div');
