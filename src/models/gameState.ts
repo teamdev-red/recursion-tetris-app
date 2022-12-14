@@ -220,7 +220,7 @@ export class GameState {
       } else if (e.key == "ArrowRight") {
         this._currentTetrimino = this.checkAndMoveRight();
       } else if (e.key == "ArrowUp") {
-        this._currentTetrimino = this.checkAndMoveBottom();
+        this._currentTetrimino = this.hardDrop();
       } else if (e.key == "ArrowDown") {
         this._currentTetrimino = this.checkAndMoveDown();
       } else if (e.key == " ") {
@@ -257,7 +257,7 @@ export class GameState {
    * テトリミノを一番下まで落とす
    * @returns {Tetrimino} 最下段まで落としたテトリミノ
    */
-  private checkAndMoveBottom(): Tetrimino {
+  private hardDrop(): Tetrimino {
     while(this.checkAndMoveDown() != this._currentTetrimino){
       this._currentTetrimino = this.checkAndMoveDown();
     }
