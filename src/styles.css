@@ -23,6 +23,16 @@ p {
   margin-top: 78px;
 }
 
+.pause-button {
+  border: none;
+  outline: none;
+  background: transparent;
+}
+
 .clickable {
   cursor: pointer;
+}
+
+.clickable :hover {
+  color: silver;
 }
