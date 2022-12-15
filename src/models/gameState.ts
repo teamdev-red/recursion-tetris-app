@@ -257,12 +257,20 @@ export class GameState {
     else {
       this.fixTetrimino();
       this._score += this.checkLine();
+      this.drawScore();
       newTetrimino = this.initializeTetrimino();
       if (!this.checkMove(newTetrimino))
         this._gameStatus = GameState.GAME_STATUS.GAMEOVER;
       this._currentTetrimino = newTetrimino;
     }
     this.drawField();
+  }
+
+  /**
+   * scoreフィールドにスコアを表示する
+   */
+  private drawScore(): void {
+    this._view.querySelector("#score").innerHTML = `${this._score}`;
   }
 
   /**
