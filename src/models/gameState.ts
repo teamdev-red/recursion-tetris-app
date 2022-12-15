@@ -108,7 +108,15 @@ export class GameState {
     gameField.height = GameState.SCREEN_H;
     gameField.style.border = "1px solid black";
     this._context = gameField.getContext("2d");
+    // クラス名を直接指定して，要素を取得してので，クラス名が変わると動かなくなる．
     this._view.querySelector(".field").appendChild(gameField);
+
+    let nextTetriminoField = document.createElement("canvas");
+    nextTetriminoField.width = GameState.BLOCK_SIZE * 4;
+    nextTetriminoField.height = GameState.BLOCK_SIZE * 4;
+    this._nextTetriminoContext = nextTetriminoField.getContext("2d");
+    // クラス名を直接指定して，要素を取得してので，クラス名が変わると動かなくなる．
+    this._view.querySelector(".next-area").appendChild(nextTetriminoField);
   }
 
   /**
@@ -153,6 +161,14 @@ export class GameState {
   private initializeField(): Field {
     return new Field(GameState.FIELD_COL, GameState.FIELD_ROW);
   }
+
+  /**
+   * 次に落ちてくるテトリミノを表示する画面を初期化する
+   */
+  private initializeNextTetriminoField(): Field {
+    return new Field(4, 4);
+  }
+
 
   /**
    * テトリミノを初期化する
