@@ -11,6 +11,7 @@ import { Tetrimino } from "./tetrimino";
  * @param {number} score テトリスのスコア
  * @param {number} gameStatus 現在のゲームの状態，0: ゲーム中，1: 一時停止，2: ゲームオーバー
  * @param {NodeJS.Timer} intervalId ゲームのインターバルID，ゲームオーバー時もしくは，ゲーム一時停止時にインターバルをクリアするために使用
+ * @param {number} gameSpeed テトリミノの落下スピード
  */
 export class GameState {
   private _context: CanvasRenderingContext2D;
@@ -19,6 +20,7 @@ export class GameState {
   private _score: number;
   private _gameStatus: number;
   private _intervalId: NodeJS.Timer;
+  private _gameSpeed: number;
 
   /**
    * blockの色
@@ -76,9 +78,14 @@ export class GameState {
   private static readonly SCORE_INCREASE = 100;
 
   /**
-   * テトリミノの落下速度 (ms)
+   * テトリミノの落下速度の初期値 (ms)
    */
-  private static readonly GAME_SPEED = 300;
+  private static readonly INITIAL_TETRIMINO_DROP_SPEED = 400;
+
+  /**
+   * テトリミノの最大落下速度 (ms)
+   */
+  private static readonly MAX_TETRIMINO_DROP_SPEED = 100;
 
   /**
    * ゲームの状態を表す定数
@@ -105,6 +112,7 @@ export class GameState {
   public gameStart(): void {
     this._gameStatus = GameState.GAME_STATUS.PLAYING;
     this._score = 0;
+    this._gameSpeed = GameState.INITIAL_TETRIMINO_DROP_SPEED;
     this._field = this.initializeField();
     this._currentTetrimino = this.initializeTetrimino();
     this.drawField();
@@ -270,8 +278,8 @@ export class GameState {
         this._currentTetrimino = this.checkAndMoveLeft();
       } else if (e.key == "ArrowRight") {
         this._currentTetrimino = this.checkAndMoveRight();
-        //} else if (e.key == "ArrowUp") {
-        //this._currentTetrimino = this.checkAndMoveUp();
+      } else if (e.key == "ArrowUp") {
+        this._currentTetrimino = this.hardDrop();
       } else if (e.key == "ArrowDown") {
         this._currentTetrimino = this.checkAndMoveDown();
       } else if (e.key == " ") {
@@ -290,7 +298,7 @@ export class GameState {
   private setDropTetriminoInterval(): NodeJS.Timer {
     if (this._gameStatus !== GameState.GAME_STATUS.PLAYING)
       return this._intervalId;
-    return setInterval(() => this.dropTetrimino(), GameState.GAME_SPEED);
+    return setInterval(() => this.dropTetrimino(), this._gameSpeed);
   }
 
   /**
@@ -309,10 +317,18 @@ export class GameState {
     return this._currentTetrimino;
   }
 
-  //private checkAndMoveUp() {
-  // とりあえず今は何もしない
-  // 今後，新しい処理を追加する可能性あり
-  //}
+
+  /**
+   * テトリミノを一番下まで落とす
+   * @returns {Tetrimino} 最下段まで落としたテトリミノ
+   */
+  private hardDrop(): Tetrimino {
+    while(this.checkAndMoveDown() != this._currentTetrimino){
+      this._currentTetrimino = this.checkAndMoveDown();
+    }
+    return this._currentTetrimino;
+  }
+
 
   private checkAndMoveDown(): Tetrimino {
     let newTetrimino = this._currentTetrimino.moveDown();
@@ -427,6 +443,12 @@ export class GameState {
       }
     }
     score = line_count ? line_count * GameState.SCORE_INCREASE : 0;
+
+    if (line_count > 0 && this._gameSpeed > GameState.MAX_TETRIMINO_DROP_SPEED) {
+      this._gameSpeed -= 10 * line_count
+      this.gameRestart();
+    }
+
     return score;
   }
 

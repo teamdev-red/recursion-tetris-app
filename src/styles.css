@@ -11,18 +11,28 @@ p {
   height: 600px;
 }
 
-.score {
+.score-area {
   width: 200px;
   height: 90px;
   margin-top: 78px;
 }
 
-.next {
+.next-area {
   width: 150px;
   height: 200px;
   margin-top: 78px;
 }
 
+.pause-button {
+  border: none;
+  outline: none;
+  background: transparent;
+}
+
 .clickable {
   cursor: pointer;
+}
+
+.clickable :hover {
+  color: silver;
 }
