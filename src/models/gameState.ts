@@ -127,10 +127,15 @@ export class GameState {
     this._score = 0;
     this._field = this.initializeField();
     this._currentTetrimino = this.initializeTetrimino();
+    this._nextTetrimino = this.initializeTetrimino();
+
+    this._nextTetriminoField= this.initializeNextTetriminoField();
+    this.drawNextTetrimino(this._nextTetrimino);
     this.drawField();
     this.setKeydownHandler();
     this._intervalId = this.setDropTetriminoInterval();
   }
+
 
   /**
    * ゲームを一時停止する
@@ -191,11 +196,12 @@ export class GameState {
    */
   private drawField(): void {
     this.clearField();
-    this.drawBlocks(this._field.value);
+    this.drawBlocks(this._field.value, 0, 0, this._context);
     this.drawBlocks(
       this._currentTetrimino.value,
       this._currentTetrimino.x,
-      this._currentTetrimino.y
+      this._currentTetrimino.y,
+      this._context
     );
     if (this._gameStatus === GameState.GAME_STATUS.GAMEOVER) {
       this.drawGameOverScreen();
@@ -289,13 +295,32 @@ export class GameState {
     else {
       this.fixTetrimino();
       this._score += this.checkLine();
-      newTetrimino = this.initializeTetrimino();
-      if (!this.checkMove(newTetrimino))
+      if (!this.checkMove(this._nextTetrimino)){
         this._gameStatus = GameState.GAME_STATUS.GAMEOVER;
-      this._currentTetrimino = newTetrimino;
+      }
+      this._currentTetrimino = this._nextTetrimino;
+      this._nextTetrimino = this.initializeTetrimino();
+      this.drawNextTetrimino(this._nextTetrimino);
     }
     this.drawField();
   }
+
+    //this._nextTetriminoを描画する
+    private drawNextTetrimino(nextTetrimino: Tetrimino): void {
+      this._nextTetriminoContext.clearRect(
+        0,
+        0,
+        GameState.BLOCK_SIZE * 4,
+        GameState.BLOCK_SIZE * 4
+      );
+      this.drawBlocks(
+        nextTetrimino.value,
+        0,
+        0,
+        this._nextTetriminoContext
+      );
+    }
+
 
   /**
    * キー入力に応じてテトリミノを移動させる
