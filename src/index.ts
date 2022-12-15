@@ -4,6 +4,8 @@ import '@fortawesome/fontawesome-free/js/fontawesome';
 import '@fortawesome/fontawesome-free/js/solid';
 import '@fortawesome/fontawesome-free/js/regular';
 
+import "./assets/sounds/rotation.mp3";
+
 import "./styles.css";
 
 import { GameState } from "./models/gameState";
