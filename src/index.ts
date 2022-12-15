@@ -7,10 +7,11 @@ import '@fortawesome/fontawesome-free/js/regular';
 import "./styles.css";
 
 import { GameState } from "./models/gameState";
+import { createGamePlayPage } from "./views/gamePlayPage";
 
-let app = document.querySelector("#app");
-let can = document.createElement("canvas");
-app.appendChild(can);
+const app = document.querySelector("#app");
+const gamePlayPage = createGamePlayPage();
+app.appendChild(gamePlayPage);
 
-const gameState = new GameState(can);
+const gameState = new GameState(gamePlayPage);
 gameState.gameStart();
