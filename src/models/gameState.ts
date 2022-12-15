@@ -98,6 +98,14 @@ export class GameState {
     GAMEOVER: 2,
   };
 
+  /**
+   * ゲームの状態を表す定数
+   */
+  private static readonly SOUND_EFFECTS = {
+    LOTATION: new Audio("../assets/sounds/rotation.mp3"),
+    GROUND: new Audio("../assets/sounds/ground.mp3"),
+    CLEAR: new Audio("../assets/sounds/clear.mp3"),
+  };
 
   /**
    * @param {HTMLDivElement} view ゲーム画面を表示する要素
@@ -268,6 +276,7 @@ export class GameState {
       newTetrimino = this.initializeTetrimino();
       if (!this.checkMove(newTetrimino))
         this._gameStatus = GameState.GAME_STATUS.GAMEOVER;
+      GameState.SOUND_EFFECTS.GROUND.play();
       this._currentTetrimino = newTetrimino;
     }
     this.drawField();
@@ -289,8 +298,8 @@ export class GameState {
       } else if (e.key == "ArrowDown") {
         this._currentTetrimino = this.checkAndMoveDown();
       } else if (e.key == " ") {
-        let sound = new Audio('./rotation.mp3');
-        sound.play();
+        GameState.SOUND_EFFECTS.LOTATION.currentTime = 0;
+        GameState.SOUND_EFFECTS.LOTATION.play();
         this._currentTetrimino = this.checkAndRotate();
       }
       this.drawField();
@@ -445,6 +454,7 @@ export class GameState {
       if (fill) {
         line_count++;
         this.clearLine(y);
+        GameState.SOUND_EFFECTS.CLEAR.play();
         y--;
       }
     }
