@@ -19,9 +19,9 @@ const config = {
         loader: "ts-loader",
         exclude: /node_modules/,
       },
-      //pngファイルとmp3ファイルをfileloaderで読み込む
+      //mp3ファイルをfileloaderで読み込む
       {
-        test: /\.(png|mp3)$/i,
+        test: /\.(mp3)$/i,
         loader: "file-loader",
         options: {
           name: "[name].[ext]",
