@@ -4,13 +4,16 @@ import '@fortawesome/fontawesome-free/js/fontawesome';
 import '@fortawesome/fontawesome-free/js/solid';
 import '@fortawesome/fontawesome-free/js/regular';
 
+import "./assets/sounds/rotation.mp3";
+
 import "./styles.css";
 
 import { GameState } from "./models/gameState";
+import { createGamePlayPage } from "./views/gamePlayPage";
 
-let app = document.querySelector("#app");
-let can = document.createElement("canvas");
-app.appendChild(can);
+const app = document.querySelector("#app");
+const gamePlayPage = createGamePlayPage();
+app.appendChild(gamePlayPage);
 
-const gameState = new GameState(can);
+const gameState = new GameState(gamePlayPage);
 gameState.gameStart();
