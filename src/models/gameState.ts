@@ -215,8 +215,14 @@ export class GameState {
    * @param {number[][]} blocks 描画するブロック
    * @param {number} [offsetX=0] ブロックを描画するときに使用する x オフセット
    * @param {number} [offsetY=0] ブロックを描画するときに使用する y オフセット
+   * @param {CanvasRenderingContext2D} context 描画するコンテキスト
    */
-  private drawBlocks(blocks: number[][], offsetX = 0, offsetY = 0): void {
+  private drawBlocks(
+    blocks: number[][],
+    offsetX = 0,
+    offsetY = 0,
+    context: CanvasRenderingContext2D
+  ): void {
     for (let y = 0; y < blocks.length; y++) {
       for (let x = 0; x < blocks[y].length; x++) {
         if (blocks[y][x]) {
@@ -224,7 +230,8 @@ export class GameState {
             x + offsetX,
             y + offsetY,
             // blockの色とGameState.BLOCK_COLORSのindexを対応させている
-            GameState.BLOCK_COLORS[blocks[y][x]]
+            GameState.BLOCK_COLORS[blocks[y][x]],
+            context
           );
         }
       }
@@ -251,19 +258,22 @@ export class GameState {
    *
    * @param {number} x ブロックの x 座標
    * @param {number} y ブロックの y 座標
+   * @param {CanvasRenderingContext2D} context 描画するコンテキスト
    */
-  private drawBlock(x: number, y: number, color: string): void {
+  private drawBlock(
+    x: number,
+    y: number,
+    color: string,
+    context: CanvasRenderingContext2D
+  ): void {
     let px = x * GameState.BLOCK_SIZE;
     let py = y * GameState.BLOCK_SIZE;
-    this._context.fillStyle = color;
-    this._context.fillRect(px, py, GameState.BLOCK_SIZE, GameState.BLOCK_SIZE);
-    this._context.strokeStyle = "black";
-    this._context.strokeRect(
-      px,
-      py,
-      GameState.BLOCK_SIZE,
-      GameState.BLOCK_SIZE
-    );
+    context.fillStyle = color;
+    context.fillRect(px, py, GameState.BLOCK_SIZE, GameState.BLOCK_SIZE);
+    // 呼ばれるごとに枠線が太くなるので，毎回リセットする
+    context.lineWidth = 1;
+    context.strokeStyle = "black";
+    context.strokeRect(px, py, GameState.BLOCK_SIZE, GameState.BLOCK_SIZE);
   }
 
   /**
