@@ -6,8 +6,11 @@ import { Tetrimino } from "./tetrimino";
  * 落下中のテトリミノ，フィールドの状態，スコア，ゲームオーバーかどうかなどを管理し，画面に描画する．
  *
  * @param {CanvasRenderingContext2D} context キャンバスのコンテキスト
+ * @param {CanvasRenderingContext2D} nextTetriminoContext 次に落下するテトリミノを表示するキャンバスのコンテキスト
  * @param {Field} field テトリスのフィールド
+ * @param {Field} nextTetriminoField 次に落下するテトリミノを表示するフィールド
  * @param {Tetrimino} currentTetrimino 落下中のテトリミノ
+ * @param {Tetrimino} nextTetrimino 次に落下するテトリミノ
  * @param {number} score テトリスのスコア
  * @param {number} gameStatus 現在のゲームの状態，0: ゲーム中，1: 一時停止，2: ゲームオーバー
  * @param {NodeJS.Timer} intervalId ゲームのインターバルID，ゲームオーバー時もしくは，ゲーム一時停止時にインターバルをクリアするために使用
@@ -15,8 +18,11 @@ import { Tetrimino } from "./tetrimino";
  */
 export class GameState {
   private _context: CanvasRenderingContext2D;
+  private _nextTetriminoContext: CanvasRenderingContext2D;
   private _field: Field;
+  private _nextTetriminoField: Field;
   private _currentTetrimino: Tetrimino;
+  private _nextTetrimino: Tetrimino;
   private _score: number;
   private _gameStatus: number;
   private _intervalId: NodeJS.Timer;
