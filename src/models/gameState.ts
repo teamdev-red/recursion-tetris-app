@@ -11,6 +11,7 @@ import { Tetrimino } from "./tetrimino";
  * @param {number} score テトリスのスコア
  * @param {number} gameStatus 現在のゲームの状態，0: ゲーム中，1: 一時停止，2: ゲームオーバー
  * @param {NodeJS.Timer} intervalId ゲームのインターバルID，ゲームオーバー時もしくは，ゲーム一時停止時にインターバルをクリアするために使用
+ * @param {HTMLDivElement} view ゲーム画面を表示する要素
  */
 export class GameState {
   private _context: CanvasRenderingContext2D;
@@ -19,6 +20,7 @@ export class GameState {
   private _score: number;
   private _gameStatus: number;
   private _intervalId: NodeJS.Timer;
+  private _view: HTMLDivElement;
 
   /**
    * blockの色
@@ -89,14 +91,18 @@ export class GameState {
     GAMEOVER: 2,
   };
 
+
   /**
-   * @param {HTMLCanvasElement} canvas ゲームをレンダリングするキャンバス要素
+   * @param {HTMLDivElement} view ゲーム画面を表示する要素
    */
-  public constructor(canvas: HTMLCanvasElement) {
-    canvas.width = GameState.SCREEN_W;
-    canvas.height = GameState.SCREEN_H;
-    canvas.style.border = "4px solid gray";
-    this._context = canvas.getContext("2d");
+  public constructor(view: HTMLDivElement) {
+    this._view = view;
+    let gameField = document.createElement("canvas");
+    gameField.width = GameState.SCREEN_W;
+    gameField.height = GameState.SCREEN_H;
+    gameField.style.border = "1px solid black";
+    this._context = gameField.getContext("2d");
+    this._view.querySelector(".field").appendChild(gameField);
   }
 
   /**
