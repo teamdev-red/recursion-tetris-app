@@ -6,8 +6,11 @@ import { Tetrimino } from "./tetrimino";
  * 落下中のテトリミノ，フィールドの状態，スコア，ゲームオーバーかどうかなどを管理し，画面に描画する．
  *
  * @param {CanvasRenderingContext2D} context キャンバスのコンテキスト
+ * @param {CanvasRenderingContext2D} nextTetriminoContext 次に落下するテトリミノを表示するキャンバスのコンテキスト
  * @param {Field} field テトリスのフィールド
+ * @param {Field} nextTetriminoField 次に落下するテトリミノを表示するフィールド
  * @param {Tetrimino} currentTetrimino 落下中のテトリミノ
+ * @param {Tetrimino} nextTetrimino 次に落下するテトリミノ
  * @param {number} score テトリスのスコア
  * @param {number} gameStatus 現在のゲームの状態，0: ゲーム中，1: 一時停止，2: ゲームオーバー
  * @param {NodeJS.Timer} intervalId ゲームのインターバルID，ゲームオーバー時もしくは，ゲーム一時停止時にインターバルをクリアするために使用
@@ -16,8 +19,11 @@ import { Tetrimino } from "./tetrimino";
  */
 export class GameState {
   private _context: CanvasRenderingContext2D;
+  private _nextTetriminoContext: CanvasRenderingContext2D;
   private _field: Field;
+  private _nextTetriminoField: Field;
   private _currentTetrimino: Tetrimino;
+  private _nextTetrimino: Tetrimino;
   private _score: number;
   private _gameStatus: number;
   private _intervalId: NodeJS.Timer;
@@ -117,7 +123,15 @@ export class GameState {
     gameField.height = GameState.SCREEN_H;
     gameField.style.border = "1px solid black";
     this._context = gameField.getContext("2d");
+    // クラス名を直接指定して，要素を取得してので，クラス名が変わると動かなくなる．
     this._view.querySelector(".field").appendChild(gameField);
+
+    let nextTetriminoField = document.createElement("canvas");
+    nextTetriminoField.width = GameState.BLOCK_SIZE * 4;
+    nextTetriminoField.height = GameState.BLOCK_SIZE * 4;
+    this._nextTetriminoContext = nextTetriminoField.getContext("2d");
+    // クラス名を直接指定して，要素を取得してので，クラス名が変わると動かなくなる．
+    this._view.querySelector(".next-area").appendChild(nextTetriminoField);
   }
 
   /**
@@ -129,10 +143,15 @@ export class GameState {
     this._gameSpeed = GameState.INITIAL_TETRIMINO_DROP_SPEED;
     this._field = this.initializeField();
     this._currentTetrimino = this.initializeTetrimino();
+    this._nextTetrimino = this.initializeTetrimino();
+
+    this._nextTetriminoField= this.initializeNextTetriminoField();
+    this.drawNextTetrimino(this._nextTetrimino);
     this.drawField();
     this.setKeydownHandler();
     this._intervalId = this.setDropTetriminoInterval();
   }
+
 
   /**
    * ゲームを一時停止する
@@ -165,6 +184,14 @@ export class GameState {
   }
 
   /**
+   * 次に落ちてくるテトリミノを表示する画面を初期化する
+   */
+  private initializeNextTetriminoField(): Field {
+    return new Field(4, 4);
+  }
+
+
+  /**
    * テトリミノを初期化する
    *
    * @returns {Tetrimino} 初期化されたテトリミノ
@@ -185,11 +212,12 @@ export class GameState {
    */
   private drawField(): void {
     this.clearField();
-    this.drawBlocks(this._field.value);
+    this.drawBlocks(this._field.value, 0, 0, this._context);
     this.drawBlocks(
       this._currentTetrimino.value,
       this._currentTetrimino.x,
-      this._currentTetrimino.y
+      this._currentTetrimino.y,
+      this._context
     );
     if (this._gameStatus === GameState.GAME_STATUS.GAMEOVER) {
       this.drawGameOverScreen();
@@ -209,8 +237,14 @@ export class GameState {
    * @param {number[][]} blocks 描画するブロック
    * @param {number} [offsetX=0] ブロックを描画するときに使用する x オフセット
    * @param {number} [offsetY=0] ブロックを描画するときに使用する y オフセット
+   * @param {CanvasRenderingContext2D} context 描画するコンテキスト
    */
-  private drawBlocks(blocks: number[][], offsetX = 0, offsetY = 0): void {
+  private drawBlocks(
+    blocks: number[][],
+    offsetX = 0,
+    offsetY = 0,
+    context: CanvasRenderingContext2D
+  ): void {
     for (let y = 0; y < blocks.length; y++) {
       for (let x = 0; x < blocks[y].length; x++) {
         if (blocks[y][x]) {
@@ -218,7 +252,8 @@ export class GameState {
             x + offsetX,
             y + offsetY,
             // blockの色とGameState.BLOCK_COLORSのindexを対応させている
-            GameState.BLOCK_COLORS[blocks[y][x]]
+            GameState.BLOCK_COLORS[blocks[y][x]],
+            context
           );
         }
       }
@@ -245,19 +280,22 @@ export class GameState {
    *
    * @param {number} x ブロックの x 座標
    * @param {number} y ブロックの y 座標
+   * @param {CanvasRenderingContext2D} context 描画するコンテキスト
    */
-  private drawBlock(x: number, y: number, color: string): void {
+  private drawBlock(
+    x: number,
+    y: number,
+    color: string,
+    context: CanvasRenderingContext2D
+  ): void {
     let px = x * GameState.BLOCK_SIZE;
     let py = y * GameState.BLOCK_SIZE;
-    this._context.fillStyle = color;
-    this._context.fillRect(px, py, GameState.BLOCK_SIZE, GameState.BLOCK_SIZE);
-    this._context.strokeStyle = "black";
-    this._context.strokeRect(
-      px,
-      py,
-      GameState.BLOCK_SIZE,
-      GameState.BLOCK_SIZE
-    );
+    context.fillStyle = color;
+    context.fillRect(px, py, GameState.BLOCK_SIZE, GameState.BLOCK_SIZE);
+    // 呼ばれるごとに枠線が太くなるので，毎回リセットする
+    context.lineWidth = 1;
+    context.strokeStyle = "black";
+    context.strokeRect(px, py, GameState.BLOCK_SIZE, GameState.BLOCK_SIZE);
   }
 
   /**
@@ -273,13 +311,40 @@ export class GameState {
     else {
       this.fixTetrimino();
       this._score += this.checkLine();
+      this.drawScore();
       newTetrimino = this.initializeTetrimino();
-      if (!this.checkMove(newTetrimino))
+      if (!this.checkMove(newTetrimino)){
         this._gameStatus = GameState.GAME_STATUS.GAMEOVER;
-      GameState.SOUND_EFFECTS.GROUND.play();
-      this._currentTetrimino = newTetrimino;
+      }
+      this._currentTetrimino = this._nextTetrimino;
+      this._nextTetrimino = this.initializeTetrimino();
+      this.drawNextTetrimino(this._nextTetrimino);
     }
     this.drawField();
+  }
+
+    //this._nextTetriminoを描画する
+    private drawNextTetrimino(nextTetrimino: Tetrimino): void {
+      this._nextTetriminoContext.clearRect(
+        0,
+        0,
+        GameState.BLOCK_SIZE * 4,
+        GameState.BLOCK_SIZE * 4
+      );
+      this.drawBlocks(
+        nextTetrimino.value,
+        0,
+        0,
+        this._nextTetriminoContext
+      );
+    }
+
+
+  /**
+   * scoreフィールドにスコアを表示する
+   */
+  private drawScore(): void {
+    this._view.querySelector("#score").innerHTML = `${this._score}`;
   }
 
   /**
