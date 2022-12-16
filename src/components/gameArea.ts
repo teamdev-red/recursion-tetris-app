@@ -8,7 +8,7 @@ export const createGameArea = (): HTMLDivElement => {
   container.classList.add('col-12', 'col-lg', 'order-lg-2');
 
   container.innerHTML = `
-    <div class="field bg-dark mx-auto mb-4 mb-md-5"></div>
+    <div class="field bg-dark mx-auto mb-4 mb-sm-5"></div>
   `;
 
   return container;
