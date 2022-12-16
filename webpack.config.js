@@ -8,7 +8,7 @@ const config = {
   devtool: "source-map",
   // ビルドされたJavaScriptファイルの出力先
   output: {
-    path: path.resolve(__dirname, "dist"),
+    path: path.resolve(__dirname, "docs"),
     filename: "bundle.js",
   },
   module: {
