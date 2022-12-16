@@ -303,7 +303,9 @@ export class GameState {
     else {
       this.fixTetrimino();
       this._score += this.checkLine();
-      if (!this.checkMove(this._nextTetrimino)){
+      this.drawScore();
+      newTetrimino = this.initializeTetrimino();
+      if (!this.checkMove(newTetrimino)){
         this._gameStatus = GameState.GAME_STATUS.GAMEOVER;
       }
       this._currentTetrimino = this._nextTetrimino;
@@ -329,6 +331,13 @@ export class GameState {
       );
     }
 
+
+  /**
+   * scoreフィールドにスコアを表示する
+   */
+  private drawScore(): void {
+    this._view.querySelector("#score").innerHTML = `${this._score}`;
+  }
 
   /**
    * キー入力に応じてテトリミノを移動させる
