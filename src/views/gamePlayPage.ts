@@ -24,7 +24,7 @@ export const createGamePlayPage = (): HTMLDivElement => {
   const nextArea = createNextArea();
   const pausedModal = createPausedModal();
 
-  row.append(scoreArea, gameArea, nextArea);
+  row.append(gameArea, scoreArea, nextArea);
   grid.append(titleArea, row);
   container.append(grid, pausedModal);
 
