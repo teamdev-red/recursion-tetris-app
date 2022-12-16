@@ -9,7 +9,6 @@ import { Tetrimino } from "./tetrimino";
  * @param {CanvasRenderingContext2D} nextTetriminoContext 次に落下するテトリミノを表示するキャンバスのコンテキスト
  * @param {CanvasRenderingContext2D} holdTetriminoContext ホールド中のテトリミノを表示するキャンバスのコンテキスト
  * @param {Field} field テトリスのフィールド
- * @param {Field} nextTetriminoField 次に落下するテトリミノを表示するフィールド
  * @param {Tetrimino} currentTetrimino 落下中のテトリミノ
  * @param {Tetrimino} nextTetrimino 次に落下するテトリミノ
  * @param {number} score テトリスのスコア
@@ -17,13 +16,12 @@ import { Tetrimino } from "./tetrimino";
  * @param {NodeJS.Timer} intervalId ゲームのインターバルID，ゲームオーバー時もしくは，ゲーム一時停止時にインターバルをクリアするために使用
  * @param {HTMLDivElement} view ゲーム画面を表示する要素
  * @param {number} gameSpeed テトリミノの落下スピード
- */
+*/
 export class GameState {
   private _context: CanvasRenderingContext2D;
   private _nextTetriminoContext: CanvasRenderingContext2D;
   private _holdedTetriminoContext: CanvasRenderingContext2D;
   private _field: Field;
-  private _nextTetriminoField: Field;
   private _currentTetrimino: Tetrimino;
   private _nextTetrimino: Tetrimino;
   private _holdedTetrimino: Tetrimino;
@@ -107,6 +105,14 @@ export class GameState {
     GAMEOVER: 2,
   };
 
+  /**
+   * ゲームの状態を表す定数
+   */
+  private static readonly SOUND_EFFECTS = {
+    LOTATION: new Audio("../assets/sounds/rotation.mp3"),
+    GROUND: new Audio("../assets/sounds/ground.mp3"),
+    CLEAR: new Audio("../assets/sounds/clear.mp3"),
+  };
 
   /**
    * @param {HTMLDivElement} view ゲーム画面を表示する要素
@@ -155,6 +161,7 @@ export class GameState {
     this._gameSpeed = GameState.INITIAL_TETRIMINO_DROP_SPEED;
     this._field = this.initializeField();
     this._currentTetrimino = this.initializeTetrimino();
+    this.drawField();
     this._nextTetrimino = this.initializeTetrimino();
     this.drawTetriminoInSubWindow(this._nextTetrimino, this._nextTetriminoContext);
     this._holdedTetrimino = null;
@@ -192,14 +199,6 @@ export class GameState {
   private initializeField(): Field {
     return new Field(GameState.FIELD_COL, GameState.FIELD_ROW);
   }
-
-  /**
-   * 次に落ちてくるテトリミノを表示する画面を初期化する
-   */
-  private initializeNextTetriminoField(): Field {
-    return new Field(4, 4);
-  }
-
 
   /**
    * テトリミノを初期化する
@@ -326,7 +325,7 @@ export class GameState {
       }
       this._currentTetrimino = this._nextTetrimino;
       this._nextTetrimino = this.initializeTetrimino();
-      this.drawNextTetrimino(this._nextTetrimino);
+      this.drawTetriminoInSubWindow(this._nextTetrimino, this._nextTetriminoContext);
     }
     this.drawField();
   }
@@ -365,9 +364,26 @@ export class GameState {
         this._currentTetrimino = this.checkAndMoveDown();
       } else if (e.key == " ") {
         this._currentTetrimino = this.checkAndRotate();
+      } else if (e.key == "Shift") {
+        this.swapHoldAndCurrentTetrimino();
+        this.drawTetriminoInSubWindow(this._holdedTetrimino, this._holdedTetriminoContext)
       }
       this.drawField();
     };
+  }
+
+  //現在落下中のテトリミノをholdする
+  private swapHoldAndCurrentTetrimino(): void {
+    if(this._holdedTetrimino){
+      let temp = this._holdedTetrimino;
+      this._holdedTetrimino = this._currentTetrimino;
+      temp.x = this._currentTetrimino.x;
+      temp.y = this._currentTetrimino.y;
+      this._currentTetrimino = temp;
+    } else {
+      this._holdedTetrimino = this._currentTetrimino;
+      this._currentTetrimino = this.initializeTetrimino();
+    }
   }
 
   /**
