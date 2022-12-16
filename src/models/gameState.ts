@@ -316,6 +316,8 @@ export class GameState {
       if (!this.checkMove(newTetrimino)){
         this._gameStatus = GameState.GAME_STATUS.GAMEOVER;
       }
+      GameState.SOUND_EFFECTS.GROUND.currentTime = 0;
+      GameState.SOUND_EFFECTS.GROUND.play();
       this._currentTetrimino = this._nextTetrimino;
       this._nextTetrimino = this.initializeTetrimino();
       this.drawNextTetrimino(this._nextTetrimino);
@@ -519,6 +521,7 @@ export class GameState {
       if (fill) {
         line_count++;
         this.clearLine(y);
+        GameState.SOUND_EFFECTS.CLEAR.currentTime = 0;
         GameState.SOUND_EFFECTS.CLEAR.play();
         y--;
       }
