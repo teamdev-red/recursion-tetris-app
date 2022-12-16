@@ -141,6 +141,7 @@ export class GameState {
     this.drawNextTetrimino(this._nextTetrimino);
     this.drawField();
     this.setKeydownHandler();
+    this.setClickHandler();
     this._intervalId = this.setDropTetriminoInterval();
   }
 
@@ -166,6 +167,28 @@ export class GameState {
     this._intervalId = this.setDropTetriminoInterval();
   }
 
+    /**
+   * クリックしたら，ゲームを再開するか一時停止するかを切り替える
+   */
+    private setClickHandler(): void {
+      //domのIDを直接指定して取得いるので，変更したら動かない
+      let gameButton = this._view.querySelector("#pauseButton");
+      console.log(gameButton);
+
+      gameButton.addEventListener("click", () => {
+        if (this._gameStatus === GameState.GAME_STATUS.PLAYING) {
+          this.gamePause();
+          gameButton.innerHTML = `
+          <i class="fa-solid fa-circle-play fa-2x text-secondary clickable"></i>
+          `;
+        } else {
+          this.gameRestart();
+          gameButton.innerHTML = `
+          <i class="fa-solid fa-circle-pause fa-2x text-secondary clickable"></i>
+          `;
+        }
+      });
+    }
   /**
    * フィールドを初期化する
    *
