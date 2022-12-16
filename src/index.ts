@@ -16,4 +16,3 @@ const gamePlayPage = createGamePlayPage();
 app.appendChild(gamePlayPage);
 
 const gameState = new GameState(gamePlayPage);
-gameState.gameStart();

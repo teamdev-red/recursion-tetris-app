@@ -104,7 +104,6 @@ export class GameState {
     GAMEOVER: 2,
   };
 
-
   /**
    * @param {HTMLDivElement} view ゲーム画面を表示する要素
    */
@@ -124,6 +123,9 @@ export class GameState {
     this._nextTetriminoContext = nextTetriminoField.getContext("2d");
     // クラス名を直接指定して，要素を取得してので，クラス名が変わると動かなくなる．
     this._view.querySelector(".next-area").appendChild(nextTetriminoField);
+    // ゲーム画面を開いた時点ではゲームは開始していないので，ゲームオーバー状態にしておく．
+    this._gameStatus = GameState.GAME_STATUS.GAMEOVER;
+    this.setClickHandler();
   }
 
   /**
@@ -136,15 +138,15 @@ export class GameState {
     this._field = this.initializeField();
     this._currentTetrimino = this.initializeTetrimino();
     this._nextTetrimino = this.initializeTetrimino();
+    this._nextTetriminoField = this.initializeNextTetriminoField();
 
-    this._nextTetriminoField= this.initializeNextTetriminoField();
     this.drawNextTetrimino(this._nextTetrimino);
     this.drawField();
+    this.setPauseButton();
     this.setKeydownHandler();
-    this.setClickHandler();
+    if (this._intervalId) clearInterval(this._intervalId);
     this._intervalId = this.setDropTetriminoInterval();
   }
-
 
   /**
    * ゲームを一時停止する
@@ -167,28 +169,47 @@ export class GameState {
     this._intervalId = this.setDropTetriminoInterval();
   }
 
-    /**
+  /**
    * クリックしたら，ゲームを再開するか一時停止するかを切り替える
    */
-    private setClickHandler(): void {
-      //domのIDを直接指定して取得いるので，変更したら動かない
-      let gameButton = this._view.querySelector("#pauseButton");
-      console.log(gameButton);
+  private setClickHandler(): void {
+    //domのIDを直接指定して取得いるので，変更したら動かない
+    let gameButton = this._view.querySelector("#pauseButton");
 
-      gameButton.addEventListener("click", () => {
-        if (this._gameStatus === GameState.GAME_STATUS.PLAYING) {
-          this.gamePause();
-          gameButton.innerHTML = `
-          <i class="fa-solid fa-circle-play fa-2x text-secondary clickable"></i>
-          `;
-        } else {
-          this.gameRestart();
-          gameButton.innerHTML = `
-          <i class="fa-solid fa-circle-pause fa-2x text-secondary clickable"></i>
-          `;
-        }
-      });
-    }
+    /*
+    以下のように状態遷移させる
+      PLAYING -> PAUSE
+      PAUSE -> PLAYING
+      GAMEOVER -> PLAYING
+    */
+    gameButton.addEventListener("click", () => {
+      if (this._gameStatus === GameState.GAME_STATUS.PLAYING) {
+        this.gamePause();
+        this.setPlayButton();
+      } else if (this._gameStatus === GameState.GAME_STATUS.PAUSE) {
+        this.gameRestart();
+        this.setPauseButton();
+      } else {
+        this.gameStart();
+        this.setPauseButton();
+      }
+    });
+  }
+
+  // Idが変わると動かなくなる!!
+  private setPlayButton(): void {
+    let gameButton = this._view.querySelector("#pauseButton");
+    gameButton.innerHTML = `
+      <i class="fa-solid fa-circle-play fa-2x text-secondary clickable"></i>
+      `;
+  }
+
+  private setPauseButton(): void {
+    let gameButton = this._view.querySelector("#pauseButton");
+    gameButton.innerHTML = `
+      <i class="fa-solid fa-circle-pause fa-2x text-secondary clickable"></i>
+      `;
+  }
   /**
    * フィールドを初期化する
    *
@@ -204,7 +225,6 @@ export class GameState {
   private initializeNextTetriminoField(): Field {
     return new Field(4, 4);
   }
-
 
   /**
    * テトリミノを初期化する
@@ -326,8 +346,9 @@ export class GameState {
     else {
       this.fixTetrimino();
       this._score += this.checkLine();
-      if (!this.checkMove(this._nextTetrimino)){
+      if (!this.checkMove(this._nextTetrimino)) {
         this._gameStatus = GameState.GAME_STATUS.GAMEOVER;
+        this.setPlayButton();
       }
       this._currentTetrimino = this._nextTetrimino;
       this._nextTetrimino = this.initializeTetrimino();
@@ -336,22 +357,16 @@ export class GameState {
     this.drawField();
   }
 
-    //this._nextTetriminoを描画する
-    private drawNextTetrimino(nextTetrimino: Tetrimino): void {
-      this._nextTetriminoContext.clearRect(
-        0,
-        0,
-        GameState.BLOCK_SIZE * 4,
-        GameState.BLOCK_SIZE * 4
-      );
-      this.drawBlocks(
-        nextTetrimino.value,
-        0,
-        0,
-        this._nextTetriminoContext
-      );
-    }
-
+  //this._nextTetriminoを描画する
+  private drawNextTetrimino(nextTetrimino: Tetrimino): void {
+    this._nextTetriminoContext.clearRect(
+      0,
+      0,
+      GameState.BLOCK_SIZE * 4,
+      GameState.BLOCK_SIZE * 4
+    );
+    this.drawBlocks(nextTetrimino.value, 0, 0, this._nextTetriminoContext);
+  }
 
   /**
    * キー入力に応じてテトリミノを移動させる
@@ -395,24 +410,23 @@ export class GameState {
     if (this.checkMove(newTetrimino)) return newTetrimino;
     return this._currentTetrimino;
   }
+
   private checkAndMoveRight(): Tetrimino {
     let newTetrimino = this._currentTetrimino.moveRight();
     if (this.checkMove(newTetrimino)) return newTetrimino;
     return this._currentTetrimino;
   }
 
-
   /**
    * テトリミノを一番下まで落とす
    * @returns {Tetrimino} 最下段まで落としたテトリミノ
    */
   private hardDrop(): Tetrimino {
-    while(this.checkAndMoveDown() != this._currentTetrimino){
+    while (this.checkAndMoveDown() != this._currentTetrimino) {
       this._currentTetrimino = this.checkAndMoveDown();
     }
     return this._currentTetrimino;
   }
-
 
   private checkAndMoveDown(): Tetrimino {
     let newTetrimino = this._currentTetrimino.moveDown();
@@ -528,8 +542,11 @@ export class GameState {
     }
     score = line_count ? line_count * GameState.SCORE_INCREASE : 0;
 
-    if (line_count > 0 && this._gameSpeed > GameState.MAX_TETRIMINO_DROP_SPEED) {
-      this._gameSpeed -= 10 * line_count
+    if (
+      line_count > 0 &&
+      this._gameSpeed > GameState.MAX_TETRIMINO_DROP_SPEED
+    ) {
+      this._gameSpeed -= 10 * line_count;
       this.gameRestart();
     }
 
