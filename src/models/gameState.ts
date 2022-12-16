@@ -108,9 +108,9 @@ export class GameState {
    * ゲームの状態を表す定数
    */
   private static readonly SOUND_EFFECTS = {
-    LOTATION: new Audio("./assets/sounds/rotation.mp3"),
-    GROUND: new Audio("./assets/sounds/ground.mp3"),
-    CLEAR: new Audio("./assets/sounds/clear.mp3"),
+    LOTATION: new Audio("../assets/sounds/rotation.mp3"),
+    GROUND: new Audio("../assets/sounds/ground.mp3"),
+    CLEAR: new Audio("../assets/sounds/clear.mp3"),
   };
 
   /**
