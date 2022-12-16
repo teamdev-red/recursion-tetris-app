@@ -7,6 +7,7 @@ import { Tetrimino } from "./tetrimino";
  *
  * @param {CanvasRenderingContext2D} context キャンバスのコンテキスト
  * @param {CanvasRenderingContext2D} nextTetriminoContext 次に落下するテトリミノを表示するキャンバスのコンテキスト
+ * @param {CanvasRenderingContext2D} holdTetriminoContext ホールド中のテトリミノを表示するキャンバスのコンテキスト
  * @param {Field} field テトリスのフィールド
  * @param {Field} nextTetriminoField 次に落下するテトリミノを表示するフィールド
  * @param {Tetrimino} currentTetrimino 落下中のテトリミノ
@@ -20,10 +21,12 @@ import { Tetrimino } from "./tetrimino";
 export class GameState {
   private _context: CanvasRenderingContext2D;
   private _nextTetriminoContext: CanvasRenderingContext2D;
+  private _holdedTetriminoContext: CanvasRenderingContext2D;
   private _field: Field;
   private _nextTetriminoField: Field;
   private _currentTetrimino: Tetrimino;
   private _nextTetrimino: Tetrimino;
+  private _holdedTetrimino: Tetrimino;
   private _score: number;
   private _gameStatus: number;
   private _intervalId: NodeJS.Timer;
@@ -110,6 +113,12 @@ export class GameState {
    */
   public constructor(view: HTMLDivElement) {
     this._view = view;
+    this.createGameField();
+    this.createNextTetriminoField();
+    this.createHoldedTetriminoField();
+  }
+
+  private createGameField(): void {
     let gameField = document.createElement("canvas");
     gameField.width = GameState.SCREEN_W;
     gameField.height = GameState.SCREEN_H;
@@ -117,13 +126,24 @@ export class GameState {
     this._context = gameField.getContext("2d");
     // クラス名を直接指定して，要素を取得してので，クラス名が変わると動かなくなる．
     this._view.querySelector(".field").appendChild(gameField);
+  }
 
+  private createNextTetriminoField(): void {
     let nextTetriminoField = document.createElement("canvas");
     nextTetriminoField.width = GameState.BLOCK_SIZE * 4;
     nextTetriminoField.height = GameState.BLOCK_SIZE * 4;
     this._nextTetriminoContext = nextTetriminoField.getContext("2d");
     // クラス名を直接指定して，要素を取得してので，クラス名が変わると動かなくなる．
     this._view.querySelector(".next-area").appendChild(nextTetriminoField);
+  }
+
+  private createHoldedTetriminoField(): void {
+    let holdedTetriminoField = document.createElement("canvas");
+    holdedTetriminoField.width = GameState.BLOCK_SIZE * 4;
+    holdedTetriminoField.height = GameState.BLOCK_SIZE * 4;
+    this._holdedTetriminoContext = holdedTetriminoField.getContext("2d");
+    // クラス名を直接指定して，要素を取得してので，クラス名が変わると動かなくなる．
+    this._view.querySelector(".hold-area").appendChild(holdedTetriminoField);
   }
 
   /**
