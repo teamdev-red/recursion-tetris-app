@@ -156,10 +156,8 @@ export class GameState {
     this._field = this.initializeField();
     this._currentTetrimino = this.initializeTetrimino();
     this._nextTetrimino = this.initializeTetrimino();
-
-    this._nextTetriminoField= this.initializeNextTetriminoField();
-    this.drawNextTetrimino(this._nextTetrimino);
-    this.drawField();
+    this.drawTetriminoInSubWindow(this._nextTetrimino, this._nextTetriminoContext);
+    this._holdedTetrimino = null;
     this.setKeydownHandler();
     this._intervalId = this.setDropTetriminoInterval();
   }
@@ -333,19 +331,19 @@ export class GameState {
     this.drawField();
   }
 
-    //this._nextTetriminoを描画する
-    private drawNextTetrimino(nextTetrimino: Tetrimino): void {
-      this._nextTetriminoContext.clearRect(
+    //this._nextTetriminoをとthis._holdedTetriminoを秒がるために使用
+    private drawTetriminoInSubWindow(tetrimino: Tetrimino, context: CanvasRenderingContext2D): void {
+      context.clearRect(
         0,
         0,
         GameState.BLOCK_SIZE * 4,
         GameState.BLOCK_SIZE * 4
       );
       this.drawBlocks(
-        nextTetrimino.value,
+        tetrimino.value,
         0,
         0,
-        this._nextTetriminoContext
+        context
       );
     }
 
