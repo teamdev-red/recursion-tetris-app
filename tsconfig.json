@@ -1,7 +1,7 @@
 {
     "compilerOptions": {
         // トランスパイルされたJavaScriptファイルの出力先
-        "outDir": "./dist/",
+        "outDir": "./docs/",
         //トランスパイルされたJavaScriptファイルに対応するTypeScriptファイルのマップ情報を出力する
         "sourceMap": true,
         // トランスパイルされるJavaScriptファイルのモジュールシステム
