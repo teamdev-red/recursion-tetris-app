@@ -7,13 +7,7 @@ export const createGameArea = (): HTMLDivElement => {
   container.classList.add('col-4');
 
   container.innerHTML = `
-    <div class="d-flex justify-content-center align-items-center">
-      <h1 class="text-center py-3 mr-3 mb-0">TETRIS</h1>
-      <div id="pauseButton">
-        <i class="fa-solid fa-circle-pause fa-2x text-secondary clickable"></i>
-      </div>
-    </div>
-    <div class="field bg-dark mx-auto"></div>
+    <div class="field bg-dark mx-auto mb-4"></div>
   `;
 
   return container;
