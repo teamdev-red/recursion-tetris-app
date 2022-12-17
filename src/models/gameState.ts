@@ -121,9 +121,14 @@ export class GameState {
    */
   public constructor(view: HTMLDivElement) {
     this._view = view;
+    // ゲーム開始時は，ゲームオーバー状態
+    this._gameStatus = GameState.GAME_STATUS.GAMEOVER;
     this.createGameField();
     this.createNextTetriminoField();
     this.createHoldedTetriminoField();
+    this.setKeydownMoveTetriminoHandler();
+    this.setKeyDownPauseHandler();
+    this.setClickHandler();
   }
 
   private createGameField(): void {
@@ -145,7 +150,6 @@ export class GameState {
     this._view.querySelector(".next-area").appendChild(nextTetriminoField);
     // ゲーム画面を開いた時点ではゲームは開始していないので，ゲームオーバー状態にしておく．
     this._gameStatus = GameState.GAME_STATUS.GAMEOVER;
-    this.setClickHandler();
   }
 
   private createHoldedTetriminoField(): void {
@@ -176,7 +180,6 @@ export class GameState {
       this._nextTetriminoContext
     );
     this._holdedTetrimino = null;
-    this.setKeydownHandler();
     if (this._intervalId) clearInterval(this._intervalId);
     this._intervalId = this.setDropTetriminoInterval();
   }
@@ -198,7 +201,6 @@ export class GameState {
     this._gameStatus = GameState.GAME_STATUS.PLAYING;
     clearInterval(this._intervalId);
     this.drawField();
-    this.setKeydownHandler();
     this._intervalId = this.setDropTetriminoInterval();
   }
 
@@ -210,23 +212,27 @@ export class GameState {
     let gameButton = this._view.querySelector("#pauseButton");
 
     /*
-    以下のように状態遷移させる
-      PLAYING -> PAUSE
+   以下のように状態遷移させる
+   PLAYING -> PAUSE
       PAUSE -> PLAYING
       GAMEOVER -> PLAYING
     */
     gameButton.addEventListener("click", () => {
-      if (this._gameStatus === GameState.GAME_STATUS.PLAYING) {
-        this.gamePause();
-        this.setPlayButton();
-      } else if (this._gameStatus === GameState.GAME_STATUS.PAUSE) {
-        this.gameRestart();
-        this.setPauseButton();
-      } else {
-        this.gameStart();
-        this.setPauseButton();
-      }
+      this.toggleGameStatus();
     });
+  }
+
+  private toggleGameStatus(): void {
+    if (this._gameStatus === GameState.GAME_STATUS.PLAYING) {
+      this.gamePause();
+      this.setPlayButton();
+    } else if (this._gameStatus === GameState.GAME_STATUS.PAUSE) {
+      this.gameRestart();
+      this.setPauseButton();
+    } else {
+      this.gameStart();
+      this.setPauseButton();
+    }
   }
 
   // Idが変わると動かなくなる!!
@@ -432,10 +438,9 @@ export class GameState {
   /**
    * キー入力に応じてテトリミノを移動させる
    */
-  private setKeydownHandler(): void {
-    document.onkeydown = (e) => {
+  private setKeydownMoveTetriminoHandler(): void {
+    document.addEventListener("keydown", (e: KeyboardEvent) => {
       if (this._gameStatus !== GameState.GAME_STATUS.PLAYING) return;
-
       if (e.key == "ArrowLeft") {
         this._currentTetrimino = this.checkAndMoveLeft();
       } else if (e.key == "ArrowRight") {
@@ -456,7 +461,14 @@ export class GameState {
         );
       }
       this.drawField();
-    };
+    });
+  }
+
+  //keydownhandlerを追加する
+  private setKeyDownPauseHandler(): void {
+    document.addEventListener("keydown", (e) => {
+      if (e.key == "p") this.toggleGameStatus();
+    });
   }
 
   //現在落下中のテトリミノをholdする
