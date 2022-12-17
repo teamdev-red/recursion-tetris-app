@@ -12,6 +12,7 @@ import { Tetrimino } from "./tetrimino";
  * @param {Tetrimino} currentTetrimino 落下中のテトリミノ
  * @param {Tetrimino} nextTetrimino 次に落下するテトリミノ
  * @param {number} score テトリスのスコア
+ * @param {number} maxScore テトリスの最高スコア
  * @param {number} gameStatus 現在のゲームの状態，0: ゲーム中，1: 一時停止，2: ゲームオーバー
  * @param {NodeJS.Timer} intervalId ゲームのインターバルID，ゲームオーバー時もしくは，ゲーム一時停止時にインターバルをクリアするために使用
  * @param {HTMLDivElement} view ゲーム画面を表示する要素
@@ -26,6 +27,7 @@ export class GameState {
   private _nextTetrimino: Tetrimino;
   private _holdedTetrimino: Tetrimino;
   private _score: number;
+  private _maxScore: number;
   private _gameStatus: number;
   private _intervalId: NodeJS.Timer;
   private _view: HTMLDivElement;
@@ -171,6 +173,7 @@ export class GameState {
     this._field = this.initializeField();
     this._currentTetrimino = this.initializeTetrimino();
     this.drawField();
+    this.drawScore();
     this._nextTetrimino = this.initializeTetrimino();
     this.drawTetriminoInSubWindow(
       this._nextTetrimino,
@@ -380,6 +383,10 @@ export class GameState {
       if (!this.checkMove(newTetrimino)) {
         this._gameStatus = GameState.GAME_STATUS.GAMEOVER;
         this.setPlayButton();
+        this._maxScore = this._maxScore
+          ? Math.max(this._maxScore, this._score)
+          : this._score;
+        this.drawMaxScore();
       }
       GameState.SOUND_EFFECTS.GROUND.currentTime = 0;
       GameState.SOUND_EFFECTS.GROUND.play();
@@ -393,25 +400,39 @@ export class GameState {
     this.drawField();
   }
 
-  //this._nextTetriminoをとthis._holdedTetriminoを描画するために使用
-  private drawTetriminoInSubWindow(
-    tetrimino: Tetrimino,
-    context: CanvasRenderingContext2D
-  ): void {
-    context.clearRect(
-      0,
-      0,
-      GameState.BLOCK_SIZE * Tetrimino.TETRIMINO_SIZE,
-      GameState.BLOCK_SIZE * Tetrimino.TETRIMINO_SIZE
-    );
-    this.drawBlocks(tetrimino.value, 0, 0, context);
-  }
+    //this._nextTetriminoをとthis._holdedTetriminoを描画するために使用
+    private drawTetriminoInSubWindow(tetrimino: Tetrimino, context: CanvasRenderingContext2D): void {
+      context.clearRect(
+        0,
+        0,
+        GameState.BLOCK_SIZE * Tetrimino.TETRIMINO_SIZE,
+        GameState.BLOCK_SIZE * Tetrimino.TETRIMINO_SIZE,
+      );
+
+      //gameStart()でthis._holdedTetriminoがnullになるので，その場合は何もしない
+      if(tetrimino==null) return;
+
+      this.drawBlocks(
+        tetrimino.value,
+        0,
+        0,
+        context
+      );
+    }
+
 
   /**
    * scoreフィールドにスコアを表示する
    */
   private drawScore(): void {
     this._view.querySelector("#score").innerHTML = `${this._score}`;
+  }
+
+  /**
+   * maxscoreフィールドにスコアを表示する
+   */
+  private drawMaxScore(): void {
+    this._view.querySelector("#max-score").innerHTML = `${this._maxScore}`;
   }
 
   /**
@@ -464,6 +485,20 @@ export class GameState {
     }
   }
 
+  private superRotate(): Tetrimino {
+    let newTetrimino = this._currentTetrimino.moveRotate();
+    while (!this.checkMoveWithinField(newTetrimino)) {
+      //左壁にぶつかったら右にずらす
+      if (newTetrimino.x < 0) {
+        newTetrimino = newTetrimino.moveRight();
+        //右壁にぶつかったら左にずらす
+      } else {
+        newTetrimino = newTetrimino.moveLeft();
+      }
+    }
+    return newTetrimino;
+  }
+
   /**
    * GAME_SPEEDの間隔でテトリミノを落下させる
    * ゲームを一時停止機能を追加する際に，clearIntervalで停止させるようにするため，intervalIdを返す
@@ -510,8 +545,23 @@ export class GameState {
 
   private checkAndRotate(): Tetrimino {
     let newTetrimino = this._currentTetrimino.moveRotate();
+    if (
+      this.checkOnWall(newTetrimino) &&
+      !this.checkMoveWithinField(newTetrimino)
+    ) {
+      return this.superRotate();
+    }
     if (this.checkMove(newTetrimino)) return newTetrimino;
     return this._currentTetrimino;
+  }
+
+  private checkOnWall(tetrimino: Tetrimino) {
+    if (tetrimino.x < 0) {
+      return true;
+    } else if (tetrimino.x > 10 - tetrimino.value[0].length) {
+      return true;
+    }
+    return false;
   }
 
   /**
