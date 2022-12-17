@@ -176,7 +176,6 @@ export class GameState {
       this._nextTetriminoContext
     );
     this._holdedTetrimino = null;
-
     this.setKeydownHandler();
     if (this._intervalId) clearInterval(this._intervalId);
     this._intervalId = this.setDropTetriminoInterval();
@@ -395,19 +394,26 @@ export class GameState {
     this.drawField();
   }
 
-  //this._nextTetriminoをとthis._holdedTetriminoを描画するために使用
-  private drawTetriminoInSubWindow(
-    tetrimino: Tetrimino,
-    context: CanvasRenderingContext2D
-  ): void {
-    context.clearRect(
-      0,
-      0,
-      GameState.BLOCK_SIZE * Tetrimino.TETRIMINO_SIZE,
-      GameState.BLOCK_SIZE * Tetrimino.TETRIMINO_SIZE
-    );
-    this.drawBlocks(tetrimino.value, 0, 0, context);
-  }
+    //this._nextTetriminoをとthis._holdedTetriminoを描画するために使用
+    private drawTetriminoInSubWindow(tetrimino: Tetrimino, context: CanvasRenderingContext2D): void {
+      context.clearRect(
+        0,
+        0,
+        GameState.BLOCK_SIZE * Tetrimino.TETRIMINO_SIZE,
+        GameState.BLOCK_SIZE * Tetrimino.TETRIMINO_SIZE,
+      );
+
+      //gameStart()でthis._holdedTetriminoがnullになるので，その場合は何もしない
+      if(tetrimino==null) return;
+
+      this.drawBlocks(
+        tetrimino.value,
+        0,
+        0,
+        context
+      );
+    }
+
 
   /**
    * scoreフィールドにスコアを表示する
