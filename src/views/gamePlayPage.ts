@@ -3,6 +3,7 @@ import { createNextArea } from '../components/nextArea';
 import { createScoreArea } from '../components/scoreArea';
 import { createPausedModal } from '../components/pausedModal';
 import { createTitleArea } from '../components/titleArea';
+import { createHoldArea } from '../components/holdArea';
 
 /**
  * ゲーム画面ページを作成する関数
@@ -19,12 +20,19 @@ export const createGamePlayPage = (): HTMLDivElement => {
   row.classList.add('row');
 
   const titleArea = createTitleArea();
-  const scoreArea = createScoreArea();
+  const holdArea = createHoldArea();
   const gameArea = createGameArea();
   const nextArea = createNextArea();
+  const scoreArea = createScoreArea();
   const pausedModal = createPausedModal();
 
-  row.append(gameArea, scoreArea, nextArea);
+  // PCサイズの右側エリア（NEXTとSCORE）
+  let rightArea = document.createElement('div');
+  // レスポンシブのグリッド幅(スマホ：100%, タブレット:50%、　PC：1/3)
+  rightArea.classList.add('col-12', 'col-sm-6', 'col-lg', 'order-lg-3');
+  rightArea.append(nextArea, scoreArea);
+
+  row.append(gameArea, holdArea, rightArea);
   grid.append(titleArea, row);
   container.append(grid, pausedModal);
 
