@@ -212,6 +212,11 @@ export class GameState {
       GAMEOVER -> PLAYING
     */
     gameButton.addEventListener("click", () => {
+      this.toggleGameStatus()
+    });
+  }
+
+  private toggleGameStatus(): void {
       if (this._gameStatus === GameState.GAME_STATUS.PLAYING) {
         this.gamePause();
         this.setPlayButton();
@@ -222,7 +227,6 @@ export class GameState {
         this.gameStart();
         this.setPauseButton();
       }
-    });
   }
 
   // Idが変わると動かなくなる!!
