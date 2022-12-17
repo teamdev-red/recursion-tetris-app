@@ -124,7 +124,8 @@ export class GameState {
     this.createGameField();
     this.createNextTetriminoField();
     this.createHoldedTetriminoField();
-    this.setKeydownHandler();
+    this.setKeydownMoveTetriminoHandler();
+    this.setKeyDownPauseHandler();
     this.setClickHandler();
   }
 
@@ -197,7 +198,6 @@ export class GameState {
     this._gameStatus = GameState.GAME_STATUS.PLAYING;
     clearInterval(this._intervalId);
     this.drawField();
-    this.setKeydownHandler();
     this._intervalId = this.setDropTetriminoInterval();
   }
 
@@ -209,13 +209,13 @@ export class GameState {
     let gameButton = this._view.querySelector("#pauseButton");
 
     /*
-    以下のように状態遷移させる
-      PLAYING -> PAUSE
+   以下のように状態遷移させる
+   PLAYING -> PAUSE
       PAUSE -> PLAYING
       GAMEOVER -> PLAYING
     */
     gameButton.addEventListener("click", () => {
-      this.toggleGameStatus()
+      this.toggleGameStatus();
     });
   }
 
@@ -417,8 +417,9 @@ export class GameState {
   /**
    * キー入力に応じてテトリミノを移動させる
    */
-  private setKeydownHandler(): void {
-    document.onkeydown = (e) => {
+  private setKeydownMoveTetriminoHandler(): void {
+    document.addEventListener("keydown", (e: KeyboardEvent) => {
+      if (this._gameStatus !== GameState.GAME_STATUS.PLAYING) return;
       if (e.key == "ArrowLeft") {
         this._currentTetrimino = this.checkAndMoveLeft();
       } else if (e.key == "ArrowRight") {
@@ -437,11 +438,16 @@ export class GameState {
           this._holdedTetrimino,
           this._holdedTetriminoContext
         );
-      } else if (e.key == "p") {
-        this.toggleGameStatus();
       }
       this.drawField();
-    };
+    });
+  }
+
+  //keydownhandlerを追加する
+  private setKeyDownPauseHandler(): void {
+    document.addEventListener("keydown", (e) => {
+      if (e.key == "p") this.toggleGameStatus();
+    });
   }
 
   //現在落下中のテトリミノをholdする
