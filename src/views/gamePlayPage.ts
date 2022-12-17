@@ -1,9 +1,11 @@
-import { createGameArea } from '../components/gameArea';
-import { createNextArea } from '../components/nextArea';
-import { createScoreArea } from '../components/scoreArea';
-import { createPausedModal } from '../components/pausedModal';
-import { createTitleArea } from '../components/titleArea';
-import { createHoldArea } from '../components/holdArea';
+import {
+  createGameArea,
+  createHoldArea,
+  createNextArea,
+  createPausedModal,
+  createScoreArea,
+  createTitleArea,
+} from '../components';
 
 /**
  * ゲーム画面ページを作成する関数
