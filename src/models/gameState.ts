@@ -12,11 +12,12 @@ import { Tetrimino } from "./tetrimino";
  * @param {Tetrimino} currentTetrimino 落下中のテトリミノ
  * @param {Tetrimino} nextTetrimino 次に落下するテトリミノ
  * @param {number} score テトリスのスコア
+ * @param {number} maxScore テトリスの最高スコア
  * @param {number} gameStatus 現在のゲームの状態，0: ゲーム中，1: 一時停止，2: ゲームオーバー
  * @param {NodeJS.Timer} intervalId ゲームのインターバルID，ゲームオーバー時もしくは，ゲーム一時停止時にインターバルをクリアするために使用
  * @param {HTMLDivElement} view ゲーム画面を表示する要素
  * @param {number} gameSpeed テトリミノの落下スピード
-*/
+ */
 export class GameState {
   private _context: CanvasRenderingContext2D;
   private _nextTetriminoContext: CanvasRenderingContext2D;
@@ -26,6 +27,7 @@ export class GameState {
   private _nextTetrimino: Tetrimino;
   private _holdedTetrimino: Tetrimino;
   private _score: number;
+  private _maxScore: number;
   private _gameStatus: number;
   private _intervalId: NodeJS.Timer;
   private _view: HTMLDivElement;
@@ -119,9 +121,14 @@ export class GameState {
    */
   public constructor(view: HTMLDivElement) {
     this._view = view;
+    // ゲーム開始時は，ゲームオーバー状態
+    this._gameStatus = GameState.GAME_STATUS.GAMEOVER;
     this.createGameField();
     this.createNextTetriminoField();
     this.createHoldedTetriminoField();
+    this.setKeydownMoveTetriminoHandler();
+    this.setKeyDownPauseHandler();
+    this.setClickHandler();
   }
 
   private createGameField(): void {
@@ -143,13 +150,14 @@ export class GameState {
     this._view.querySelector(".next-area").appendChild(nextTetriminoField);
     // ゲーム画面を開いた時点ではゲームは開始していないので，ゲームオーバー状態にしておく．
     this._gameStatus = GameState.GAME_STATUS.GAMEOVER;
-    this.setClickHandler();
   }
 
   private createHoldedTetriminoField(): void {
     let holdedTetriminoField = document.createElement("canvas");
-    holdedTetriminoField.width = GameState.BLOCK_SIZE * Tetrimino.TETRIMINO_SIZE;
-    holdedTetriminoField.height = GameState.BLOCK_SIZE * Tetrimino.TETRIMINO_SIZE;
+    holdedTetriminoField.width =
+      GameState.BLOCK_SIZE * Tetrimino.TETRIMINO_SIZE;
+    holdedTetriminoField.height =
+      GameState.BLOCK_SIZE * Tetrimino.TETRIMINO_SIZE;
     this._holdedTetriminoContext = holdedTetriminoField.getContext("2d");
     // クラス名を直接指定して，要素を取得してので，クラス名が変わると動かなくなる．
     this._view.querySelector(".hold-area").appendChild(holdedTetriminoField);
@@ -165,10 +173,13 @@ export class GameState {
     this._field = this.initializeField();
     this._currentTetrimino = this.initializeTetrimino();
     this.drawField();
+    this.drawScore();
     this._nextTetrimino = this.initializeTetrimino();
-    this.drawTetriminoInSubWindow(this._nextTetrimino, this._nextTetriminoContext);
+    this.drawTetriminoInSubWindow(
+      this._nextTetrimino,
+      this._nextTetriminoContext
+    );
     this._holdedTetrimino = null;
-    this.setKeydownHandler();
     if (this._intervalId) clearInterval(this._intervalId);
     this._intervalId = this.setDropTetriminoInterval();
   }
@@ -190,7 +201,6 @@ export class GameState {
     this._gameStatus = GameState.GAME_STATUS.PLAYING;
     clearInterval(this._intervalId);
     this.drawField();
-    this.setKeydownHandler();
     this._intervalId = this.setDropTetriminoInterval();
   }
 
@@ -202,23 +212,27 @@ export class GameState {
     let gameButton = this._view.querySelector("#pauseButton");
 
     /*
-    以下のように状態遷移させる
-      PLAYING -> PAUSE
+   以下のように状態遷移させる
+   PLAYING -> PAUSE
       PAUSE -> PLAYING
       GAMEOVER -> PLAYING
     */
     gameButton.addEventListener("click", () => {
-      if (this._gameStatus === GameState.GAME_STATUS.PLAYING) {
-        this.gamePause();
-        this.setPlayButton();
-      } else if (this._gameStatus === GameState.GAME_STATUS.PAUSE) {
-        this.gameRestart();
-        this.setPauseButton();
-      } else {
-        this.gameStart();
-        this.setPauseButton();
-      }
+      this.toggleGameStatus();
     });
+  }
+
+  private toggleGameStatus(): void {
+    if (this._gameStatus === GameState.GAME_STATUS.PLAYING) {
+      this.gamePause();
+      this.setPlayButton();
+    } else if (this._gameStatus === GameState.GAME_STATUS.PAUSE) {
+      this.gameRestart();
+      this.setPauseButton();
+    } else {
+      this.gameStart();
+      this.setPauseButton();
+    }
   }
 
   // Idが変わると動かなくなる!!
@@ -366,15 +380,22 @@ export class GameState {
       this._score += this.checkLine();
       this.drawScore();
       newTetrimino = this.initializeTetrimino();
-      if (!this.checkMove(newTetrimino)){
+      if (!this.checkMove(newTetrimino)) {
         this._gameStatus = GameState.GAME_STATUS.GAMEOVER;
         this.setPlayButton();
+        this._maxScore = this._maxScore
+          ? Math.max(this._maxScore, this._score)
+          : this._score;
+        this.drawMaxScore();
       }
       GameState.SOUND_EFFECTS.GROUND.currentTime = 0;
       GameState.SOUND_EFFECTS.GROUND.play();
       this._currentTetrimino = this._nextTetrimino;
       this._nextTetrimino = this.initializeTetrimino();
-      this.drawTetriminoInSubWindow(this._nextTetrimino, this._nextTetriminoContext);
+      this.drawTetriminoInSubWindow(
+        this._nextTetrimino,
+        this._nextTetriminoContext
+      );
     }
     this.drawField();
   }
@@ -387,6 +408,10 @@ export class GameState {
         GameState.BLOCK_SIZE * Tetrimino.TETRIMINO_SIZE,
         GameState.BLOCK_SIZE * Tetrimino.TETRIMINO_SIZE,
       );
+
+      //gameStart()でthis._holdedTetriminoがnullになるので，その場合は何もしない
+      if(tetrimino==null) return;
+
       this.drawBlocks(
         tetrimino.value,
         0,
@@ -404,12 +429,18 @@ export class GameState {
   }
 
   /**
+   * maxscoreフィールドにスコアを表示する
+   */
+  private drawMaxScore(): void {
+    this._view.querySelector("#max-score").innerHTML = `${this._maxScore}`;
+  }
+
+  /**
    * キー入力に応じてテトリミノを移動させる
    */
-  private setKeydownHandler(): void {
-    document.onkeydown = (e) => {
+  private setKeydownMoveTetriminoHandler(): void {
+    document.addEventListener("keydown", (e: KeyboardEvent) => {
       if (this._gameStatus !== GameState.GAME_STATUS.PLAYING) return;
-
       if (e.key == "ArrowLeft") {
         this._currentTetrimino = this.checkAndMoveLeft();
       } else if (e.key == "ArrowRight") {
@@ -424,15 +455,25 @@ export class GameState {
         this._currentTetrimino = this.checkAndRotate();
       } else if (e.key == "Shift") {
         this.swapHoldAndCurrentTetrimino();
-        this.drawTetriminoInSubWindow(this._holdedTetrimino, this._holdedTetriminoContext)
+        this.drawTetriminoInSubWindow(
+          this._holdedTetrimino,
+          this._holdedTetriminoContext
+        );
       }
       this.drawField();
-    };
+    });
+  }
+
+  //keydownhandlerを追加する
+  private setKeyDownPauseHandler(): void {
+    document.addEventListener("keydown", (e) => {
+      if (e.key == "p") this.toggleGameStatus();
+    });
   }
 
   //現在落下中のテトリミノをholdする
   private swapHoldAndCurrentTetrimino(): void {
-    if(this._holdedTetrimino){
+    if (this._holdedTetrimino) {
       let temp = this._holdedTetrimino;
       this._holdedTetrimino = this._currentTetrimino;
       temp.x = this._currentTetrimino.x;
@@ -442,6 +483,20 @@ export class GameState {
       this._holdedTetrimino = this._currentTetrimino;
       this._currentTetrimino = this.initializeTetrimino();
     }
+  }
+
+  private superRotate(): Tetrimino {
+    let newTetrimino = this._currentTetrimino.moveRotate();
+    while (!this.checkMoveWithinField(newTetrimino)) {
+      //左壁にぶつかったら右にずらす
+      if (newTetrimino.x < 0) {
+        newTetrimino = newTetrimino.moveRight();
+        //右壁にぶつかったら左にずらす
+      } else {
+        newTetrimino = newTetrimino.moveLeft();
+      }
+    }
+    return newTetrimino;
   }
 
   /**
@@ -490,8 +545,23 @@ export class GameState {
 
   private checkAndRotate(): Tetrimino {
     let newTetrimino = this._currentTetrimino.moveRotate();
+    if (
+      this.checkOnWall(newTetrimino) &&
+      !this.checkMoveWithinField(newTetrimino)
+    ) {
+      return this.superRotate();
+    }
     if (this.checkMove(newTetrimino)) return newTetrimino;
     return this._currentTetrimino;
+  }
+
+  private checkOnWall(tetrimino: Tetrimino) {
+    if (tetrimino.x < 0) {
+      return true;
+    } else if (tetrimino.x > 10 - tetrimino.value[0].length) {
+      return true;
+    }
+    return false;
   }
 
   /**

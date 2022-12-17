@@ -11,6 +11,10 @@ export const createScoreArea = (): HTMLDivElement => {
       <p class="h5">SCORE</p>
       <p class="h2 text-right" id="score">0</p>
     </div>
+    <div class="score-area bg-dark text-white mx-auto mx-sm-0 mt-2 p-2">
+      <p class="h5">MAX SCORE</p>
+      <p class="h2 text-right" id="max-score">0</p>
+    </div>
   `;
 
   return container;
