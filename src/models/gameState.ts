@@ -49,9 +49,24 @@ export class GameState {
   ];
 
   /**
-   * 落下地点予測blockの色
+   * 落下地点予測のblockの色
+   * blockの数値の値に対応する
    */
-  private static readonly PREDICTION_BLOCK_COLOR = "#343A40";
+  private static readonly LANDING_POINT_BLOCK_COLORS = [
+    "#FFF", // 空白
+    "rgba(0, 255, 87, 0.1)", // Z
+    "rgba(250, 255, 0, 0.1)", // S
+    "rgba(255, 153, 0, 0.1)", // J
+    "rgba(0, 209, 255, 0.1)", // L
+    "rgba(0, 0, 255, 0.1)", // T
+    "rgba(255, 0, 0, 0.1)", // I
+    "rgba(143, 0, 255, 0.1)", // O
+  ];
+
+  private static readonly BODER_COLORS = {
+    WHITE: "#FFFFFF", 
+    BLACK: "#000000",
+  };
 
   /**
    * 1ブロックのサイズ (px)
@@ -279,13 +294,22 @@ export class GameState {
    */
   private drawField(): void {
     this.clearField();
-    this.drawBlocks(this._field.value, 0, 0, this._context);
+    this.drawBlocks(
+      this._field.value, 
+      0, 
+      0, 
+      this._context, 
+      GameState.BLOCK_COLORS, 
+      GameState.BODER_COLORS.BLACK);
     this.drawBlocks(
       this._currentTetrimino.value,
       this._currentTetrimino.x,
       this._currentTetrimino.y,
-      this._context
+      this._context,
+      GameState.BLOCK_COLORS,
+      GameState.BODER_COLORS.BLACK
     );
+    this.drawLandingPoint();
     if (this._gameStatus === GameState.GAME_STATUS.GAMEOVER) {
       this.drawGameOverScreen();
     }
@@ -305,40 +329,50 @@ export class GameState {
    * @param {number} [offsetX=0] ブロックを描画するときに使用する x オフセット
    * @param {number} [offsetY=0] ブロックを描画するときに使用する y オフセット
    * @param {CanvasRenderingContext2D} context 描画するコンテキスト
+   * @param {borderColor} string 描画するブロックの色
+   * @param {borderColor} string 描画するブロックの枠線の色
    */
   private drawBlocks(
     blocks: number[][],
     offsetX = 0,
     offsetY = 0,
-    context: CanvasRenderingContext2D
+    context: CanvasRenderingContext2D,
+    blockColor: string[],
+    borderColor: string
   ): void {
+    for (let y = 0; y < blocks.length; y++) {
+      for (let x = 0; x < blocks[y].length; x++) {
+        if (blocks[y][x]) {
+          this.drawBlock(
+            x + offsetX,
+            y + offsetY,
+            // blockの色とGameState.BLOCK_COLORSのindexを対応させている
+            blockColor[blocks[y][x]],
+            borderColor,
+            context
+          );
+        }
+      }
+    }
+  }
 
+  /**
+   * 落下地点予測を描画する
+   */
+  private drawLandingPoint(): void {
     let plus = 0;
     let newTetrimino = this._currentTetrimino.moveDown();
     while (this.checkMove(newTetrimino)) {
       newTetrimino.y++;
       plus++;
     }
-
-    for (let y = 0; y < blocks.length; y++) {
-      for (let x = 0; x < blocks[y].length; x++) {
-        if (blocks[y][x]) {
-          this.drawBlock(
-            x + offsetX,
-            y + offsetY + plus,
-            GameState.PREDICTION_BLOCK_COLOR,
-            context
-          );
-          this.drawBlock(
-            x + offsetX,
-            y + offsetY,
-            // blockの色とGameState.BLOCK_COLORSのindexを対応させている
-            GameState.BLOCK_COLORS[blocks[y][x]],
-            context
-          );
-        }
-      }
-    }
+    this.drawBlocks(
+      this._currentTetrimino.value, 
+      this._currentTetrimino.x,
+      this._currentTetrimino.y + plus,
+      this._context,
+      GameState.LANDING_POINT_BLOCK_COLORS,
+      GameState.BODER_COLORS.WHITE)
   }
 
   /**
@@ -361,21 +395,24 @@ export class GameState {
    *
    * @param {number} x ブロックの x 座標
    * @param {number} y ブロックの y 座標
+   * @param {string} blockColor ブロックの色
+   * @param {string} borderColor 枠線の色
    * @param {CanvasRenderingContext2D} context 描画するコンテキスト
    */
   private drawBlock(
     x: number,
     y: number,
-    color: string,
+    blockColor: string,
+    borderColor: string,
     context: CanvasRenderingContext2D
   ): void {
     let px = x * GameState.BLOCK_SIZE;
     let py = y * GameState.BLOCK_SIZE;
-    context.fillStyle = color;
+    context.fillStyle = blockColor;
     context.fillRect(px, py, GameState.BLOCK_SIZE, GameState.BLOCK_SIZE);
     // 呼ばれるごとに枠線が太くなるので，毎回リセットする
     context.lineWidth = 1;
-    context.strokeStyle = "black";
+    context.strokeStyle = borderColor;
     context.strokeRect(px, py, GameState.BLOCK_SIZE, GameState.BLOCK_SIZE);
   }
 
@@ -425,7 +462,13 @@ export class GameState {
       GameState.BLOCK_SIZE * Tetrimino.TETRIMINO_SIZE,
       GameState.BLOCK_SIZE * Tetrimino.TETRIMINO_SIZE
     );
-    this.drawBlocks(tetrimino.value, 0, 0, context);
+    this.drawBlocks(
+      tetrimino.value, 
+      0, 
+      0, 
+      context, 
+      GameState.BLOCK_COLORS, 
+      GameState.BODER_COLORS.BLACK);
   }
 
   /**
