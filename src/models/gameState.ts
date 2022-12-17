@@ -373,6 +373,20 @@ export class GameState {
     };
   }
 
+  private superRotate(): Tetrimino {
+    let newTetrimino = this._currentTetrimino.moveRotate();
+    while (!this.checkMoveWithinField(newTetrimino)) {
+      //左壁にぶつかったら右にずらす
+      if (newTetrimino.x < 0) {
+        newTetrimino = newTetrimino.moveRight();
+        //右壁にぶつかったら左にずらす
+      } else {
+        newTetrimino = newTetrimino.moveLeft();
+      }
+    }
+    return newTetrimino;
+  }
+
   /**
    * GAME_SPEEDの間隔でテトリミノを落下させる
    * ゲームを一時停止機能を追加する際に，clearIntervalで停止させるようにするため，intervalIdを返す
