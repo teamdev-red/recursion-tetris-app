@@ -4,7 +4,7 @@
  */
 export const createHoldArea = (): HTMLDivElement => {
   let container = document.createElement('div');
-  // レスポンシブのグリッド幅(スマホ：100%, タブレット:50%、　PC：1/3)
+  // レスポンシブのグリッド幅(スマホ：表示なし, タブレット:50%、PC：1/3)
   container.classList.add(
     'd-none',
     'd-sm-block',
