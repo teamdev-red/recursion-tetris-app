@@ -13,7 +13,7 @@ import {
  */
 export const createGamePlayPage = (): HTMLDivElement => {
   let container = document.createElement('div');
-  container.classList.add('bg-lightblue', 'vh-100');
+  container.classList.add('bg-lightblue', 'min-vh-100');
 
   let grid = document.createElement('div');
   grid.classList.add('container');
