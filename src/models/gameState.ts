@@ -49,6 +49,11 @@ export class GameState {
   ];
 
   /**
+   * 落下地点予測blockの色
+   */
+  private static readonly PREDICTION_BLOCK_COLOR = "#343A40";
+
+  /**
    * 1ブロックのサイズ (px)
    */
   private static readonly BLOCK_SIZE = 30;
@@ -307,9 +312,23 @@ export class GameState {
     offsetY = 0,
     context: CanvasRenderingContext2D
   ): void {
+
+    let plus = 0;
+    let newTetrimino = this._currentTetrimino.moveDown();
+    while (this.checkMove(newTetrimino)) {
+      newTetrimino.y++;
+      plus++;
+    }
+
     for (let y = 0; y < blocks.length; y++) {
       for (let x = 0; x < blocks[y].length; x++) {
         if (blocks[y][x]) {
+          this.drawBlock(
+            x + offsetX,
+            y + offsetY + plus,
+            GameState.PREDICTION_BLOCK_COLOR,
+            context
+          );
           this.drawBlock(
             x + offsetX,
             y + offsetY,
