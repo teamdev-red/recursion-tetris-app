@@ -420,8 +420,23 @@ export class GameState {
 
   private checkAndRotate(): Tetrimino {
     let newTetrimino = this._currentTetrimino.moveRotate();
+    if (
+      this.checkOnWall(newTetrimino) &&
+      !this.checkMoveWithinField(newTetrimino)
+    ) {
+      return this.superRotate();
+    }
     if (this.checkMove(newTetrimino)) return newTetrimino;
     return this._currentTetrimino;
+  }
+
+  private checkOnWall(tetrimino: Tetrimino) {
+    if (tetrimino.x < 0) {
+      return true;
+    } else if (tetrimino.x > 10 - tetrimino.value[0].length) {
+      return true;
+    }
+    return false;
   }
 
   /**
