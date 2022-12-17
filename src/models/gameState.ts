@@ -119,9 +119,13 @@ export class GameState {
    */
   public constructor(view: HTMLDivElement) {
     this._view = view;
+    // ゲーム開始時は，ゲームオーバー状態
+    this._gameStatus = GameState.GAME_STATUS.GAMEOVER;
     this.createGameField();
     this.createNextTetriminoField();
     this.createHoldedTetriminoField();
+    this.setKeydownHandler();
+    this.setClickHandler();
   }
 
   private createGameField(): void {
