@@ -105,6 +105,15 @@ export class GameState {
   };
 
   /**
+   * ゲームの状態を表す定数
+   */
+  private static readonly SOUND_EFFECTS = {
+    LOTATION: new Audio("../assets/sounds/rotation.mp3"),
+    GROUND: new Audio("../assets/sounds/ground.mp3"),
+    CLEAR: new Audio("../assets/sounds/clear.mp3"),
+  };
+
+  /**
    * @param {HTMLDivElement} view ゲーム画面を表示する要素
    */
   public constructor(view: HTMLDivElement) {
@@ -346,10 +355,14 @@ export class GameState {
     else {
       this.fixTetrimino();
       this._score += this.checkLine();
-      if (!this.checkMove(this._nextTetrimino)) {
+      this.drawScore();
+      newTetrimino = this.initializeTetrimino();
+      if (!this.checkMove(newTetrimino)){
         this._gameStatus = GameState.GAME_STATUS.GAMEOVER;
         this.setPlayButton();
       }
+      GameState.SOUND_EFFECTS.GROUND.currentTime = 0;
+      GameState.SOUND_EFFECTS.GROUND.play();
       this._currentTetrimino = this._nextTetrimino;
       this._nextTetrimino = this.initializeTetrimino();
       this.drawNextTetrimino(this._nextTetrimino);
@@ -369,6 +382,13 @@ export class GameState {
   }
 
   /**
+   * scoreフィールドにスコアを表示する
+   */
+  private drawScore(): void {
+    this._view.querySelector("#score").innerHTML = `${this._score}`;
+  }
+
+  /**
    * キー入力に応じてテトリミノを移動させる
    */
   private setKeydownHandler(): void {
@@ -384,6 +404,8 @@ export class GameState {
       } else if (e.key == "ArrowDown") {
         this._currentTetrimino = this.checkAndMoveDown();
       } else if (e.key == " ") {
+        GameState.SOUND_EFFECTS.LOTATION.currentTime = 0;
+        GameState.SOUND_EFFECTS.LOTATION.play();
         this._currentTetrimino = this.checkAndRotate();
       }
       this.drawField();
@@ -537,6 +559,8 @@ export class GameState {
       if (fill) {
         line_count++;
         this.clearLine(y);
+        GameState.SOUND_EFFECTS.CLEAR.currentTime = 0;
+        GameState.SOUND_EFFECTS.CLEAR.play();
         y--;
       }
     }
