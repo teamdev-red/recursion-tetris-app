@@ -23,6 +23,12 @@ p {
   margin-top: 78px;
 }
 
+.hold-area {
+  width: 150px;
+  height: 200px;
+  margin-top: 78px;
+}
+
 .pause-button {
   border: none;
   outline: none;

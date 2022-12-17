@@ -9,7 +9,10 @@ export const createNextArea = (): HTMLDivElement => {
   container.innerHTML = `
     <div class="next-area bg-dark p-2">
       <p class="h5 text-center text-white">NEXT</p>
-    </div>  
+    </div>
+    <div class="hold-area bg-dark p-2">
+      <p class="h5 text-center text-white">HOLD</p>
+    </div>
   `;
 
   return container;

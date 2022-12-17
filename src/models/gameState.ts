@@ -7,8 +7,8 @@ import { Tetrimino } from "./tetrimino";
  *
  * @param {CanvasRenderingContext2D} context キャンバスのコンテキスト
  * @param {CanvasRenderingContext2D} nextTetriminoContext 次に落下するテトリミノを表示するキャンバスのコンテキスト
+ * @param {CanvasRenderingContext2D} holdTetriminoContext ホールド中のテトリミノを表示するキャンバスのコンテキスト
  * @param {Field} field テトリスのフィールド
- * @param {Field} nextTetriminoField 次に落下するテトリミノを表示するフィールド
  * @param {Tetrimino} currentTetrimino 落下中のテトリミノ
  * @param {Tetrimino} nextTetrimino 次に落下するテトリミノ
  * @param {number} score テトリスのスコア
@@ -16,14 +16,15 @@ import { Tetrimino } from "./tetrimino";
  * @param {NodeJS.Timer} intervalId ゲームのインターバルID，ゲームオーバー時もしくは，ゲーム一時停止時にインターバルをクリアするために使用
  * @param {HTMLDivElement} view ゲーム画面を表示する要素
  * @param {number} gameSpeed テトリミノの落下スピード
- */
+*/
 export class GameState {
   private _context: CanvasRenderingContext2D;
   private _nextTetriminoContext: CanvasRenderingContext2D;
+  private _holdedTetriminoContext: CanvasRenderingContext2D;
   private _field: Field;
-  private _nextTetriminoField: Field;
   private _currentTetrimino: Tetrimino;
   private _nextTetrimino: Tetrimino;
+  private _holdedTetrimino: Tetrimino;
   private _score: number;
   private _gameStatus: number;
   private _intervalId: NodeJS.Timer;
@@ -118,6 +119,12 @@ export class GameState {
    */
   public constructor(view: HTMLDivElement) {
     this._view = view;
+    this.createGameField();
+    this.createNextTetriminoField();
+    this.createHoldedTetriminoField();
+  }
+
+  private createGameField(): void {
     let gameField = document.createElement("canvas");
     gameField.width = GameState.SCREEN_W;
     gameField.height = GameState.SCREEN_H;
@@ -125,13 +132,24 @@ export class GameState {
     this._context = gameField.getContext("2d");
     // クラス名を直接指定して，要素を取得してので，クラス名が変わると動かなくなる．
     this._view.querySelector(".field").appendChild(gameField);
+  }
 
+  private createNextTetriminoField(): void {
     let nextTetriminoField = document.createElement("canvas");
-    nextTetriminoField.width = GameState.BLOCK_SIZE * 4;
-    nextTetriminoField.height = GameState.BLOCK_SIZE * 4;
+    nextTetriminoField.width = GameState.BLOCK_SIZE * Tetrimino.TETRIMINO_SIZE;
+    nextTetriminoField.height = GameState.BLOCK_SIZE * Tetrimino.TETRIMINO_SIZE;
     this._nextTetriminoContext = nextTetriminoField.getContext("2d");
     // クラス名を直接指定して，要素を取得してので，クラス名が変わると動かなくなる．
     this._view.querySelector(".next-area").appendChild(nextTetriminoField);
+  }
+
+  private createHoldedTetriminoField(): void {
+    let holdedTetriminoField = document.createElement("canvas");
+    holdedTetriminoField.width = GameState.BLOCK_SIZE * Tetrimino.TETRIMINO_SIZE;
+    holdedTetriminoField.height = GameState.BLOCK_SIZE * Tetrimino.TETRIMINO_SIZE;
+    this._holdedTetriminoContext = holdedTetriminoField.getContext("2d");
+    // クラス名を直接指定して，要素を取得してので，クラス名が変わると動かなくなる．
+    this._view.querySelector(".hold-area").appendChild(holdedTetriminoField);
   }
 
   /**
@@ -143,11 +161,10 @@ export class GameState {
     this._gameSpeed = GameState.INITIAL_TETRIMINO_DROP_SPEED;
     this._field = this.initializeField();
     this._currentTetrimino = this.initializeTetrimino();
-    this._nextTetrimino = this.initializeTetrimino();
-
-    this._nextTetriminoField= this.initializeNextTetriminoField();
-    this.drawNextTetrimino(this._nextTetrimino);
     this.drawField();
+    this._nextTetrimino = this.initializeTetrimino();
+    this.drawTetriminoInSubWindow(this._nextTetrimino, this._nextTetriminoContext);
+    this._holdedTetrimino = null;
     this.setKeydownHandler();
     this._intervalId = this.setDropTetriminoInterval();
   }
@@ -182,14 +199,6 @@ export class GameState {
   private initializeField(): Field {
     return new Field(GameState.FIELD_COL, GameState.FIELD_ROW);
   }
-
-  /**
-   * 次に落ちてくるテトリミノを表示する画面を初期化する
-   */
-  private initializeNextTetriminoField(): Field {
-    return new Field(4, 4);
-  }
-
 
   /**
    * テトリミノを初期化する
@@ -320,24 +329,24 @@ export class GameState {
       GameState.SOUND_EFFECTS.GROUND.play();
       this._currentTetrimino = this._nextTetrimino;
       this._nextTetrimino = this.initializeTetrimino();
-      this.drawNextTetrimino(this._nextTetrimino);
+      this.drawTetriminoInSubWindow(this._nextTetrimino, this._nextTetriminoContext);
     }
     this.drawField();
   }
 
-    //this._nextTetriminoを描画する
-    private drawNextTetrimino(nextTetrimino: Tetrimino): void {
-      this._nextTetriminoContext.clearRect(
+    //this._nextTetriminoをとthis._holdedTetriminoを描画するために使用
+    private drawTetriminoInSubWindow(tetrimino: Tetrimino, context: CanvasRenderingContext2D): void {
+      context.clearRect(
         0,
         0,
-        GameState.BLOCK_SIZE * 4,
-        GameState.BLOCK_SIZE * 4
+        GameState.BLOCK_SIZE * Tetrimino.TETRIMINO_SIZE,
+        GameState.BLOCK_SIZE * Tetrimino.TETRIMINO_SIZE,
       );
       this.drawBlocks(
-        nextTetrimino.value,
+        tetrimino.value,
         0,
         0,
-        this._nextTetriminoContext
+        context
       );
     }
 
@@ -368,9 +377,26 @@ export class GameState {
         GameState.SOUND_EFFECTS.LOTATION.currentTime = 0;
         GameState.SOUND_EFFECTS.LOTATION.play();
         this._currentTetrimino = this.checkAndRotate();
+      } else if (e.key == "Shift") {
+        this.swapHoldAndCurrentTetrimino();
+        this.drawTetriminoInSubWindow(this._holdedTetrimino, this._holdedTetriminoContext)
       }
       this.drawField();
     };
+  }
+
+  //現在落下中のテトリミノをholdする
+  private swapHoldAndCurrentTetrimino(): void {
+    if(this._holdedTetrimino){
+      let temp = this._holdedTetrimino;
+      this._holdedTetrimino = this._currentTetrimino;
+      temp.x = this._currentTetrimino.x;
+      temp.y = this._currentTetrimino.y;
+      this._currentTetrimino = temp;
+    } else {
+      this._holdedTetrimino = this._currentTetrimino;
+      this._currentTetrimino = this.initializeTetrimino();
+    }
   }
 
   /**
