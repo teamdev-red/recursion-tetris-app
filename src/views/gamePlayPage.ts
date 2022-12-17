@@ -2,6 +2,7 @@ import { createGameArea } from '../components/gameArea';
 import { createNextArea } from '../components/nextArea';
 import { createScoreArea } from '../components/scoreArea';
 import { createPausedModal } from '../components/pausedModal';
+import { createTitleArea } from '../components/titleArea';
 
 /**
  * ゲーム画面ページを作成する関数
@@ -17,13 +18,14 @@ export const createGamePlayPage = (): HTMLDivElement => {
   let row = document.createElement('div');
   row.classList.add('row');
 
+  const titleArea = createTitleArea();
   const scoreArea = createScoreArea();
   const gameArea = createGameArea();
   const nextArea = createNextArea();
   const pausedModal = createPausedModal();
 
-  row.append(scoreArea, gameArea, nextArea);
-  grid.append(row);
+  row.append(gameArea, scoreArea, nextArea);
+  grid.append(titleArea, row);
   container.append(grid, pausedModal);
 
   return container;
