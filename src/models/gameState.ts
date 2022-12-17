@@ -168,6 +168,7 @@ export class GameState {
     this._nextTetrimino = this.initializeTetrimino();
     this.drawTetriminoInSubWindow(this._nextTetrimino, this._nextTetriminoContext);
     this._holdedTetrimino = null;
+    this.drawTetriminoInSubWindow(this._holdedTetrimino, this._holdedTetriminoContext);
     this.setKeydownHandler();
     if (this._intervalId) clearInterval(this._intervalId);
     this._intervalId = this.setDropTetriminoInterval();
@@ -387,6 +388,10 @@ export class GameState {
         GameState.BLOCK_SIZE * Tetrimino.TETRIMINO_SIZE,
         GameState.BLOCK_SIZE * Tetrimino.TETRIMINO_SIZE,
       );
+
+      //gameStart()でthis._holdedTetriminoがnullになるので，その場合は何もしない
+      if(tetrimino==null) return;
+
       this.drawBlocks(
         tetrimino.value,
         0,
