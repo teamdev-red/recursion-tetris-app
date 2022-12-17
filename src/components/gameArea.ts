@@ -4,16 +4,11 @@
  */
 export const createGameArea = (): HTMLDivElement => {
   let container = document.createElement('div');
-  container.classList.add('col-4');
+  // レスポンシブのグリッド幅(スマホ：100%, タブレット:100%、　PC：1/3)
+  container.classList.add('col-12', 'col-lg', 'order-lg-2');
 
   container.innerHTML = `
-    <div class="d-flex justify-content-center align-items-center">
-      <h1 class="text-center py-3 mr-3 mb-0">TETRIS</h1>
-      <div id="pauseButton">
-        <i class="fa-solid fa-circle-play fa-2x text-secondary clickable"></i>
-      </div>
-    </div>
-    <div class="field bg-dark mx-auto"></div>
+    <div class="field bg-dark mx-auto mb-4 mb-sm-5"></div>
   `;
 
   return container;
