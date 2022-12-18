@@ -24357,13 +24357,15 @@ var GameState = /** @class */ (function () {
         this._view = view;
         // ゲーム開始時は，ゲームオーバー状態
         this._gameStatus = GameState.GAME_STATUS.GAMEOVER;
+        this.setKeydownMoveTetriminoHandler();
+        this.setKeyDownPauseHandler();
         this.renderStartPage();
-        this.setSelectHandler();
     }
     GameState.prototype.renderStartPage = function () {
         var _this = this;
         this._view.innerHTML = "";
         this._view.appendChild((0,_views_startPage__WEBPACK_IMPORTED_MODULE_1__.createStartPage)());
+        this.setDifficultySelectHandler();
         document.querySelector("#gameStart").addEventListener("click", function () {
             _this.renderGamePlayPage();
         });
@@ -24375,8 +24377,6 @@ var GameState = /** @class */ (function () {
         this.createGameField();
         this.createNextTetriminoField();
         this.createHoldedTetriminoField();
-        this.setKeydownMoveTetriminoHandler();
-        this.setKeyDownPauseHandler();
         this.pauseGameOnModalShow();
         this.setClickHandler();
         this.gameStart();
@@ -24419,7 +24419,6 @@ var GameState = /** @class */ (function () {
     GameState.prototype.gameStart = function () {
         this._gameStatus = GameState.GAME_STATUS.PLAYING;
         this._score = 0;
-        this._gameSpeed = GameState.INITIAL_TETRIMINO_DROP_SPEED;
         this._field = this.initializeField();
         this._currentTetrimino = this.initializeTetrimino();
         this.drawField();
@@ -24437,6 +24436,8 @@ var GameState = /** @class */ (function () {
      * ゲームを一時停止する
      */
     GameState.prototype.gamePause = function () {
+        if (this._gameStatus === GameState.GAME_STATUS.GAMEOVER)
+            return;
         this._gameStatus = GameState.GAME_STATUS.PAUSE;
         clearInterval(this._intervalId);
         this.drawField();
@@ -24448,6 +24449,8 @@ var GameState = /** @class */ (function () {
      * ゲームを再開する
      */
     GameState.prototype.gameRestart = function () {
+        if (this._gameStatus === GameState.GAME_STATUS.GAMEOVER)
+            return;
         this._gameStatus = GameState.GAME_STATUS.PLAYING;
         clearInterval(this._intervalId);
         this.drawField();
@@ -24475,12 +24478,12 @@ var GameState = /** @class */ (function () {
     GameState.prototype.pauseGameOnModalShow = function () {
         var _this = this;
         jquery__WEBPACK_IMPORTED_MODULE_2__('.modal').on('show.bs.modal', function () {
-            console.log("modal open");
             _this.gamePause();
         });
         jquery__WEBPACK_IMPORTED_MODULE_2__('.modal').on('hidden.bs.modal', function () {
-            console.log("modal close");
-            _this.gameRestart();
+            if (_this._gameStatus === GameState.GAME_STATUS.PAUSE) {
+                _this.gameRestart();
+            }
         });
     };
     GameState.prototype.toggleGameStatus = function () {
@@ -24512,21 +24515,24 @@ var GameState = /** @class */ (function () {
     GameState.prototype.setDifficultyLevel = function () {
         var difficultyLevel = document.getElementById('difficultyLevel');
         if (difficultyLevel.value === 'easy') {
-            GameState.INITIAL_TETRIMINO_DROP_SPEED = 500;
+            this._gameSpeed = GameState.INITIAL_TETRIMINO_DROP_SPEED.easy;
         }
         else if (difficultyLevel.value === 'normal') {
-            GameState.INITIAL_TETRIMINO_DROP_SPEED = 400;
+            this._gameSpeed = GameState.INITIAL_TETRIMINO_DROP_SPEED.normal;
         }
         else if (difficultyLevel.value === 'hard') {
-            GameState.INITIAL_TETRIMINO_DROP_SPEED = 300;
+            this._gameSpeed = GameState.INITIAL_TETRIMINO_DROP_SPEED.hard;
         }
     };
     /**
      * スタートページの難易度選択欄にonchangeイベントを登録する
      */
-    GameState.prototype.setSelectHandler = function () {
+    GameState.prototype.setDifficultySelectHandler = function () {
+        var _this = this;
         var difficultyLevel = document.getElementById('difficultyLevel');
-        difficultyLevel.onchange = this.setDifficultyLevel;
+        difficultyLevel.addEventListener('change', function () {
+            _this.setDifficultyLevel();
+        });
     };
     /**
      * フィールドを初期化する
@@ -24762,6 +24768,8 @@ var GameState = /** @class */ (function () {
         var _this = this;
         if (this._gameStatus !== GameState.GAME_STATUS.PLAYING)
             return this._intervalId;
+        if (!this._gameSpeed)
+            this._gameSpeed = GameState.INITIAL_TETRIMINO_DROP_SPEED.normal;
         return setInterval(function () { return _this.dropTetrimino(); }, this._gameSpeed);
     };
     /**
@@ -25008,7 +25016,11 @@ var GameState = /** @class */ (function () {
     /**
      * テトリミノの落下速度の初期値 (ms)
      */
-    GameState.INITIAL_TETRIMINO_DROP_SPEED = 400;
+    GameState.INITIAL_TETRIMINO_DROP_SPEED = {
+        easy: 400,
+        normal: 300,
+        hard: 200,
+    };
     /**
      * テトリミノの最大落下速度 (ms)
      */
