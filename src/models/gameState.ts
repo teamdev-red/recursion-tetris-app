@@ -1,3 +1,10 @@
+import "../assets/sounds/rotation.mp3";
+import "../assets/sounds/ground.mp3";
+import "../assets/sounds/clear.mp3";
+import "../assets/sounds/play.mp3";
+import "../assets/sounds/pause.mp3";
+import "../assets/sounds/gameover.mp3";
+
 import { Field } from "./field";
 import { Tetrimino } from "./tetrimino";
 
@@ -134,6 +141,9 @@ export class GameState {
     LOTATION: new Audio("../assets/sounds/rotation.mp3"),
     GROUND: new Audio("../assets/sounds/ground.mp3"),
     CLEAR: new Audio("../assets/sounds/clear.mp3"),
+    PLAY: new Audio("../assets/sounds/play.mp3"),
+    PAUSE: new Audio("../assets/sounds/pause.mp3"),
+    GAMEOVER: new Audio("../assets/sounds/gameover.mp3"),
   };
 
   /**
@@ -200,6 +210,8 @@ export class GameState {
       this._nextTetriminoContext
     );
     this._holdedTetrimino = null;
+    GameState.SOUND_EFFECTS.PLAY.currentTime = 0;
+    GameState.SOUND_EFFECTS.PLAY.play();
     if (this._intervalId) clearInterval(this._intervalId);
     this._intervalId = this.setDropTetriminoInterval();
   }
@@ -212,6 +224,8 @@ export class GameState {
     clearInterval(this._intervalId);
     this.drawField();
     this._intervalId = this.setDropTetriminoInterval();
+    GameState.SOUND_EFFECTS.PAUSE.currentTime = 0;
+    GameState.SOUND_EFFECTS.PAUSE.play();
   }
 
   /**
@@ -222,6 +236,8 @@ export class GameState {
     clearInterval(this._intervalId);
     this.drawField();
     this._intervalId = this.setDropTetriminoInterval();
+    GameState.SOUND_EFFECTS.PLAY.currentTime = 0;
+    GameState.SOUND_EFFECTS.PLAY.play();
   }
 
   /**
@@ -438,6 +454,8 @@ export class GameState {
       newTetrimino = this.initializeTetrimino();
       if (!this.checkMove(newTetrimino)) {
         this._gameStatus = GameState.GAME_STATUS.GAMEOVER;
+        GameState.SOUND_EFFECTS.GAMEOVER.currentTime = 0;
+        GameState.SOUND_EFFECTS.GAMEOVER.play();
         this.setPlayButton();
         this._maxScore = this._maxScore
           ? Math.max(this._maxScore, this._score)
@@ -466,7 +484,7 @@ export class GameState {
       );
 
       //gameStart()でthis._holdedTetriminoがnullになるので，その場合は何もしない
-      if(tetrimino==null) return;
+      if (tetrimino == null) return;
 
       this.drawBlocks(
         tetrimino.value,
@@ -699,6 +717,17 @@ export class GameState {
   }
 
   /**
+   * 落下速度を変化させる
+   * 
+   * @param {number} gameSpeed ブロックの落下速度
+   */
+  private changeGameSpeed(gameSpeed: number): void {
+    clearInterval(this._intervalId);
+    this._gameSpeed = gameSpeed;
+    this._intervalId = this.setDropTetriminoInterval();
+  }
+
+  /**
    * テトリミノが揃ったか確認し，揃った行を削除する．
    * 1行揃うごとにSCORE_INCREASE点加算しスコアを返す
    *
@@ -730,7 +759,7 @@ export class GameState {
       this._gameSpeed > GameState.MAX_TETRIMINO_DROP_SPEED
     ) {
       this._gameSpeed -= 10 * line_count;
-      this.gameRestart();
+      this.changeGameSpeed(this._gameSpeed);
     }
 
     return score;
