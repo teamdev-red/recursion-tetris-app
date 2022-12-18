@@ -135,12 +135,19 @@ export class GameState {
       this.renderGamePlayPage();
     })
   }
+
+  private renderGamePlayPage(): void {
+    this._view.innerHTML = ``;
+    this._view.appendChild(createGamePlayPage());
     this.createGameField();
     this.createNextTetriminoField();
     this.createHoldedTetriminoField();
     this.setKeydownMoveTetriminoHandler();
     this.setKeyDownPauseHandler();
     this.setClickHandler();
+    document.querySelector("#game-title").addEventListener("click", () => {
+      this.renderStartPage();
+    });
   }
 
   private createGameField(): void {
