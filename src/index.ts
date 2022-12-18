@@ -7,6 +7,9 @@ import '@fortawesome/fontawesome-free/js/regular';
 import "./assets/sounds/rotation.mp3";
 import "./assets/sounds/ground.mp3";
 import "./assets/sounds/clear.mp3";
+import "./assets/sounds/play.mp3";
+import "./assets/sounds/pause.mp3";
+import "./assets/sounds/gameover.mp3";
 
 import "./styles.css";
 
