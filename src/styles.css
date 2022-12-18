@@ -1,0 +1,45 @@
+p {
+  margin: 0;
+}
+
+.bg-lightblue {
+  background-color: #bddfff;
+}
+
+.field {
+  width: 300px;
+  height: 600px;
+}
+
+.score-area {
+  width: 150px;
+  height: 90px;
+}
+
+.next-area {
+  width: 150px;
+  height: 200px;
+}
+
+.hold-area {
+  width: 150px;
+  height: 200px;
+}
+
+.controls-card{
+  width: 300px;  
+}
+
+.pause-button {
+  border: none;
+  outline: none;
+  background: transparent;
+}
+
+.clickable {
+  cursor: pointer;
+}
+
+.clickable :hover {
+  color: silver;
+}
