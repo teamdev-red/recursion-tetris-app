@@ -125,6 +125,16 @@ export class GameState {
     this._view = view;
     // ゲーム開始時は，ゲームオーバー状態
     this._gameStatus = GameState.GAME_STATUS.GAMEOVER;
+    this.renderStartPage();
+  }
+
+  private renderStartPage(): void {
+    this._view.innerHTML = ``;
+    this._view.appendChild(createStartPage());
+    document.querySelector("#gameStart").addEventListener("click", () => {
+      this.renderGamePlayPage();
+    })
+  }
     this.createGameField();
     this.createNextTetriminoField();
     this.createHoldedTetriminoField();
