@@ -9740,7 +9740,7 @@ __webpack_require__.r(__webpack_exports__);
 
 var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1___default()((_node_modules_css_loader_dist_runtime_sourceMaps_js__WEBPACK_IMPORTED_MODULE_0___default()));
 // Module
-___CSS_LOADER_EXPORT___.push([module.id, "p {\n  margin: 0;\n}\n\n.bg-lightblue {\n  background-color: #bddfff;\n}\n\n.field {\n  width: 300px;\n  height: 600px;\n}\n\n.score-area {\n  width: 200px;\n  height: 90px;\n}\n\n.next-area {\n  width: 150px;\n  height: 200px;\n}\n\n.hold-area {\n  width: 150px;\n  height: 200px;\n  margin-top: 78px;\n}\n\n.pause-button {\n  border: none;\n  outline: none;\n  background: transparent;\n}\n\n.clickable {\n  cursor: pointer;\n}\n\n.clickable :hover {\n  color: silver;\n}\n", "",{"version":3,"sources":["webpack://./src/styles.css"],"names":[],"mappings":"AAAA;EACE,SAAS;AACX;;AAEA;EACE,yBAAyB;AAC3B;;AAEA;EACE,YAAY;EACZ,aAAa;AACf;;AAEA;EACE,YAAY;EACZ,YAAY;AACd;;AAEA;EACE,YAAY;EACZ,aAAa;AACf;;AAEA;EACE,YAAY;EACZ,aAAa;EACb,gBAAgB;AAClB;;AAEA;EACE,YAAY;EACZ,aAAa;EACb,uBAAuB;AACzB;;AAEA;EACE,eAAe;AACjB;;AAEA;EACE,aAAa;AACf","sourcesContent":["p {\n  margin: 0;\n}\n\n.bg-lightblue {\n  background-color: #bddfff;\n}\n\n.field {\n  width: 300px;\n  height: 600px;\n}\n\n.score-area {\n  width: 200px;\n  height: 90px;\n}\n\n.next-area {\n  width: 150px;\n  height: 200px;\n}\n\n.hold-area {\n  width: 150px;\n  height: 200px;\n  margin-top: 78px;\n}\n\n.pause-button {\n  border: none;\n  outline: none;\n  background: transparent;\n}\n\n.clickable {\n  cursor: pointer;\n}\n\n.clickable :hover {\n  color: silver;\n}\n"],"sourceRoot":""}]);
+___CSS_LOADER_EXPORT___.push([module.id, "p {\n  margin: 0;\n}\n\n.bg-lightblue {\n  background-color: #bddfff;\n}\n\n.field {\n  width: 300px;\n  height: 600px;\n}\n\n.score-area {\n  width: 150px;\n  height: 90px;\n}\n\n.next-area {\n  width: 150px;\n  height: 200px;\n}\n\n.hold-area {\n  width: 150px;\n  height: 200px;\n}\n\n.pause-button {\n  border: none;\n  outline: none;\n  background: transparent;\n}\n\n.clickable {\n  cursor: pointer;\n}\n\n.clickable :hover {\n  color: silver;\n}\n", "",{"version":3,"sources":["webpack://./src/styles.css"],"names":[],"mappings":"AAAA;EACE,SAAS;AACX;;AAEA;EACE,yBAAyB;AAC3B;;AAEA;EACE,YAAY;EACZ,aAAa;AACf;;AAEA;EACE,YAAY;EACZ,YAAY;AACd;;AAEA;EACE,YAAY;EACZ,aAAa;AACf;;AAEA;EACE,YAAY;EACZ,aAAa;AACf;;AAEA;EACE,YAAY;EACZ,aAAa;EACb,uBAAuB;AACzB;;AAEA;EACE,eAAe;AACjB;;AAEA;EACE,aAAa;AACf","sourcesContent":["p {\n  margin: 0;\n}\n\n.bg-lightblue {\n  background-color: #bddfff;\n}\n\n.field {\n  width: 300px;\n  height: 600px;\n}\n\n.score-area {\n  width: 150px;\n  height: 90px;\n}\n\n.next-area {\n  width: 150px;\n  height: 200px;\n}\n\n.hold-area {\n  width: 150px;\n  height: 200px;\n}\n\n.pause-button {\n  border: none;\n  outline: none;\n  background: transparent;\n}\n\n.clickable {\n  cursor: pointer;\n}\n\n.clickable :hover {\n  color: silver;\n}\n"],"sourceRoot":""}]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -23951,6 +23951,64 @@ var createGameArea = function () {
 
 /***/ }),
 
+/***/ "./src/components/holdArea.ts":
+/*!************************************!*\
+  !*** ./src/components/holdArea.ts ***!
+  \************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "createHoldArea": () => (/* binding */ createHoldArea)
+/* harmony export */ });
+/**
+ * ホールドしたテトリミノ表示エリアのdiv要素を作成する関数
+ * @return {HTMLDivElement} ホールドしたテトリミノ表示エリアのdiv要素
+ */
+var createHoldArea = function () {
+    var container = document.createElement('div');
+    // レスポンシブのグリッド幅(スマホ：表示なし, タブレット:50%、PC：1/3)
+    container.classList.add('d-none', 'd-sm-block', 'd-md-block', 'col-12', 'col-sm-6', 'col-lg', 'order-lg-1');
+    container.innerHTML = "\n    <div class=\"d-flex justify-content-sm-end\">\n      <div class=\"hold-area bg-dark p-2\">\n        <p class=\"h5 text-center text-white\">HOLD</p>\n      </div>\n    </div>  \n  ";
+    return container;
+};
+
+
+/***/ }),
+
+/***/ "./src/components/index.ts":
+/*!*********************************!*\
+  !*** ./src/components/index.ts ***!
+  \*********************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "createGameArea": () => (/* reexport safe */ _gameArea__WEBPACK_IMPORTED_MODULE_0__.createGameArea),
+/* harmony export */   "createHoldArea": () => (/* reexport safe */ _holdArea__WEBPACK_IMPORTED_MODULE_1__.createHoldArea),
+/* harmony export */   "createNextArea": () => (/* reexport safe */ _nextArea__WEBPACK_IMPORTED_MODULE_2__.createNextArea),
+/* harmony export */   "createPausedModal": () => (/* reexport safe */ _pausedModal__WEBPACK_IMPORTED_MODULE_3__.createPausedModal),
+/* harmony export */   "createScoreArea": () => (/* reexport safe */ _scoreArea__WEBPACK_IMPORTED_MODULE_4__.createScoreArea),
+/* harmony export */   "createTitleArea": () => (/* reexport safe */ _titleArea__WEBPACK_IMPORTED_MODULE_5__.createTitleArea)
+/* harmony export */ });
+/* harmony import */ var _gameArea__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./gameArea */ "./src/components/gameArea.ts");
+/* harmony import */ var _holdArea__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./holdArea */ "./src/components/holdArea.ts");
+/* harmony import */ var _nextArea__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./nextArea */ "./src/components/nextArea.ts");
+/* harmony import */ var _pausedModal__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./pausedModal */ "./src/components/pausedModal.ts");
+/* harmony import */ var _scoreArea__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./scoreArea */ "./src/components/scoreArea.ts");
+/* harmony import */ var _titleArea__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./titleArea */ "./src/components/titleArea.ts");
+
+
+
+
+
+
+
+
+/***/ }),
+
 /***/ "./src/components/nextArea.ts":
 /*!************************************!*\
   !*** ./src/components/nextArea.ts ***!
@@ -23968,9 +24026,9 @@ __webpack_require__.r(__webpack_exports__);
  */
 var createNextArea = function () {
     var container = document.createElement('div');
-    // レスポンシブのグリッド幅(スマホ：表示なし, タブレット:50%、　PC：1/3)
-    container.classList.add('d-none', 'd-sm-block', 'd-md-block', 'col-sm-6', 'col-lg', 'order-lg-3');
-    container.innerHTML = "\n    <div class=\"next-area bg-dark p-2\">\n      <p class=\"h5 text-center text-white\">NEXT</p>\n    </div>\n    <div class=\"hold-area bg-dark p-2\">\n      <p class=\"h5 text-center text-white\">HOLD</p>\n    </div>\n  ";
+    // レスポンシブのグリッド幅(スマホ：表示なし, タブレット:50%、 PC：1/3)
+    container.classList.add('d-none', 'd-sm-block', 'd-md-block');
+    container.innerHTML = "\n    <div class=\"next-area bg-dark p-2\">\n      <p class=\"h5 text-center text-white\">NEXT</p>\n    </div>\n  ";
     return container;
 };
 
@@ -24026,9 +24084,8 @@ __webpack_require__.r(__webpack_exports__);
  */
 var createScoreArea = function () {
     var container = document.createElement('div');
-    // レスポンシブのグリッド幅(スマホ：100%, タブレット:50%、　PC：1/3)
-    container.classList.add('col-12', 'col-sm-6', 'col-lg', 'order-lg-1');
-    container.innerHTML = "\n    <div class=\"d-flex flex-column align-items-md-end align-items-center\">\n      <div class=\"score-area bg-dark text-white p-2 mb-2\">\n        <p class=\"h5\">SCORE</p>\n        <p class=\"h2 text-right\" id=\"score\">0</p>\n      </div>\n      <div class=\"score-area bg-dark text-white p-2\">\n        <p class=\"h5\">MAX SCORE</p>\n        <p class=\"h2 text-right\" id=\"max-score\">0</p>\n      </div>\n    </div>\n  ";
+    container.classList.add('d-flex', "flex-sm-column", 'mt-4');
+    container.innerHTML = "\n    <div class=\"score-area bg-dark text-white mx-auto mx-sm-0 mb-2 p-2\">\n      <p class=\"h5\">SCORE</p>\n      <p class=\"h2 text-right\" id=\"score\">0</p>\n    </div>\n    <div class=\"score-area bg-dark text-white mx-auto mx-sm-0 p-2\">\n      <p class=\"h5\">MAX SCORE</p>\n      <p class=\"h2 text-right\" id=\"max-score\">0</p>\n    </div>\n  ";
     return container;
 };
 
@@ -24945,15 +25002,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "createGamePlayPage": () => (/* binding */ createGamePlayPage)
 /* harmony export */ });
-/* harmony import */ var _components_gameArea__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../components/gameArea */ "./src/components/gameArea.ts");
-/* harmony import */ var _components_nextArea__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../components/nextArea */ "./src/components/nextArea.ts");
-/* harmony import */ var _components_scoreArea__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../components/scoreArea */ "./src/components/scoreArea.ts");
-/* harmony import */ var _components_pausedModal__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../components/pausedModal */ "./src/components/pausedModal.ts");
-/* harmony import */ var _components_titleArea__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../components/titleArea */ "./src/components/titleArea.ts");
-
-
-
-
+/* harmony import */ var _components__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../components */ "./src/components/index.ts");
 
 /**
  * ゲーム画面ページを作成する関数
@@ -24961,17 +25010,23 @@ __webpack_require__.r(__webpack_exports__);
  */
 var createGamePlayPage = function () {
     var container = document.createElement('div');
-    container.classList.add('bg-lightblue', 'vh-100');
+    container.classList.add('bg-lightblue', 'min-vh-100');
     var grid = document.createElement('div');
     grid.classList.add('container');
     var row = document.createElement('div');
     row.classList.add('row');
-    var titleArea = (0,_components_titleArea__WEBPACK_IMPORTED_MODULE_4__.createTitleArea)();
-    var scoreArea = (0,_components_scoreArea__WEBPACK_IMPORTED_MODULE_2__.createScoreArea)();
-    var gameArea = (0,_components_gameArea__WEBPACK_IMPORTED_MODULE_0__.createGameArea)();
-    var nextArea = (0,_components_nextArea__WEBPACK_IMPORTED_MODULE_1__.createNextArea)();
-    var pausedModal = (0,_components_pausedModal__WEBPACK_IMPORTED_MODULE_3__.createPausedModal)();
-    row.append(gameArea, scoreArea, nextArea);
+    var titleArea = (0,_components__WEBPACK_IMPORTED_MODULE_0__.createTitleArea)();
+    var holdArea = (0,_components__WEBPACK_IMPORTED_MODULE_0__.createHoldArea)();
+    var gameArea = (0,_components__WEBPACK_IMPORTED_MODULE_0__.createGameArea)();
+    var nextArea = (0,_components__WEBPACK_IMPORTED_MODULE_0__.createNextArea)();
+    var scoreArea = (0,_components__WEBPACK_IMPORTED_MODULE_0__.createScoreArea)();
+    var pausedModal = (0,_components__WEBPACK_IMPORTED_MODULE_0__.createPausedModal)();
+    // PCサイズの右側エリア（NEXTとSCORE）
+    var rightArea = document.createElement('div');
+    // レスポンシブのグリッド幅(スマホ：100%, タブレット:50%、　PC：1/3)
+    rightArea.classList.add('col-12', 'col-sm-6', 'col-lg', 'order-lg-3');
+    rightArea.append(nextArea, scoreArea);
+    row.append(gameArea, holdArea, rightArea);
     grid.append(titleArea, row);
     container.append(grid, pausedModal);
     return container;
