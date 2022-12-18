@@ -472,7 +472,9 @@ export class GameState {
         tetrimino.value,
         0,
         0,
-        context
+        context,
+        GameState.BLOCK_COLORS,
+        GameState.BODER_COLORS.BLACK,
       );
     }
 
