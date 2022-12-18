@@ -1,3 +1,5 @@
+import { createGamePlayPage } from "../views/gamePlayPage";
+import { createStartPage } from "../views/startPage";
 import { Field } from "./field";
 import { Tetrimino } from "./tetrimino";
 
@@ -147,12 +149,29 @@ export class GameState {
     this._view = view;
     // ゲーム開始時は，ゲームオーバー状態
     this._gameStatus = GameState.GAME_STATUS.GAMEOVER;
+    this.renderStartPage();
+  }
+
+  private renderStartPage(): void {
+    this._view.innerHTML = ``;
+    this._view.appendChild(createStartPage());
+    document.querySelector("#gameStart").addEventListener("click", () => {
+      this.renderGamePlayPage();
+    })
+  }
+
+  private renderGamePlayPage(): void {
+    this._view.innerHTML = ``;
+    this._view.appendChild(createGamePlayPage());
     this.createGameField();
     this.createNextTetriminoField();
     this.createHoldedTetriminoField();
     this.setKeydownMoveTetriminoHandler();
     this.setKeyDownPauseHandler();
     this.setClickHandler();
+    document.querySelector("#game-title").addEventListener("click", () => {
+      this.renderStartPage();
+    });
   }
 
   private createGameField(): void {

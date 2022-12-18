@@ -15,10 +15,6 @@ import "./assets/sounds/gameover.mp3";
 import "./styles.css";
 
 import { GameState } from "./models/gameState";
-import { createGamePlayPage } from "./views/gamePlayPage";
 
-const app = document.querySelector("#app");
-const gamePlayPage = createGamePlayPage();
-app.appendChild(gamePlayPage);
-
-const gameState = new GameState(gamePlayPage);
+const app = document.querySelector("#app") as HTMLDivElement;
+new GameState(app);

@@ -9,7 +9,7 @@ export const createTitleArea = (): HTMLDivElement => {
   container.innerHTML = `
     <div class="col-4 mx-auto">
       <div class="d-flex justify-content-center align-items-center">
-        <h1 class="text-center py-3 mr-3 mb-0">TETRIS</h1>
+        <h1 id="game-title" class="text-center py-3 mr-3 mb-0 clickable">TETRIS</h1>
         <div id="pauseButton">
           <i class="fa-solid fa-circle-play fa-2x text-secondary clickable"></i>
         </div>
