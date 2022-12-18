@@ -23999,6 +23999,32 @@ var createBootstrapBtn = function (text, type, id) {
 
 /***/ }),
 
+/***/ "./src/components/bootstrapSelect.ts":
+/*!*******************************************!*\
+  !*** ./src/components/bootstrapSelect.ts ***!
+  \*******************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "createBootstrapSelect": () => (/* binding */ createBootstrapSelect)
+/* harmony export */ });
+/**
+ * bootstrapのセレクトを作成する関数
+ * @return {HTMLDivElement} bootstrapのボタンのdiv要素
+ */
+var createBootstrapSelect = function () {
+    var container = document.createElement('div');
+    container.classList.add('mx-auto');
+    container.style.width = '200px';
+    container.innerHTML = "\n    <p>DIFFICULTY LEVEL</p>\n      <select\n        id=\"difficultyLevel\"\n        class=\"custom-select custom-select-lg shadow\"\n        style=\"background-color: aliceblue\"\n      >\n        <option value=\"easy\">EASY</option>\n        <option value=\"normal\" selected>NORMAL</option>\n        <option value=\"hard\">HARD</option>\n      </select>\n  ";
+    return container;
+};
+
+
+/***/ }),
+
 /***/ "./src/components/controlsCardModal.ts":
 /*!*********************************************!*\
   !*** ./src/components/controlsCardModal.ts ***!
@@ -24332,6 +24358,7 @@ var GameState = /** @class */ (function () {
         // ゲーム開始時は，ゲームオーバー状態
         this._gameStatus = GameState.GAME_STATUS.GAMEOVER;
         this.renderStartPage();
+        this.setSelectHandler();
     }
     GameState.prototype.renderStartPage = function () {
         var _this = this;
@@ -24478,6 +24505,28 @@ var GameState = /** @class */ (function () {
     GameState.prototype.setPauseButton = function () {
         var gameButton = this._view.querySelector("#pauseButton");
         gameButton.innerHTML = "\n      <i class=\"fa-solid fa-circle-pause fa-2x text-secondary clickable\"></i>\n      ";
+    };
+    /**
+     * スタートページで難易度を設定する
+     */
+    GameState.prototype.setDifficultyLevel = function () {
+        var difficultyLevel = document.getElementById('difficultyLevel');
+        if (difficultyLevel.value === 'easy') {
+            GameState.INITIAL_TETRIMINO_DROP_SPEED = 500;
+        }
+        else if (difficultyLevel.value === 'normal') {
+            GameState.INITIAL_TETRIMINO_DROP_SPEED = 400;
+        }
+        else if (difficultyLevel.value === 'hard') {
+            GameState.INITIAL_TETRIMINO_DROP_SPEED = 300;
+        }
+    };
+    /**
+     * スタートページの難易度選択欄にonchangeイベントを登録する
+     */
+    GameState.prototype.setSelectHandler = function () {
+        var difficultyLevel = document.getElementById('difficultyLevel');
+        difficultyLevel.onchange = this.setDifficultyLevel;
     };
     /**
      * フィールドを初期化する
@@ -25257,6 +25306,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "createStartPage": () => (/* binding */ createStartPage)
 /* harmony export */ });
 /* harmony import */ var _components_bootstrapBtn__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../components/bootstrapBtn */ "./src/components/bootstrapBtn.ts");
+/* harmony import */ var _components_bootstrapSelect__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../components/bootstrapSelect */ "./src/components/bootstrapSelect.ts");
+
 
 /**
  * スタート画面ページを作成する関数
@@ -25267,8 +25318,8 @@ var createStartPage = function () {
     container.classList.add('bg-lightblue', 'vh-100');
     container.innerHTML = "\n  <h1 class=\"display-2 font-weight-bold text-center py-5\">TETRIS</h1>\n  ";
     var startButton = (0,_components_bootstrapBtn__WEBPACK_IMPORTED_MODULE_0__.createBootstrapBtn)('GAME START', 'primary', 'gameStart');
-    var settingsButton = (0,_components_bootstrapBtn__WEBPACK_IMPORTED_MODULE_0__.createBootstrapBtn)('SETTINGS', 'secondary', 'settings');
-    container.append(startButton, settingsButton);
+    var difficultyLevel = (0,_components_bootstrapSelect__WEBPACK_IMPORTED_MODULE_1__.createBootstrapSelect)();
+    container.append(startButton, difficultyLevel);
     return container;
 };
 
