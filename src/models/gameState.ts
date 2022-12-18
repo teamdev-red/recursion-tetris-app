@@ -1,10 +1,3 @@
-import "../assets/sounds/rotation.mp3";
-import "../assets/sounds/ground.mp3";
-import "../assets/sounds/clear.mp3";
-import "../assets/sounds/play.mp3";
-import "../assets/sounds/pause.mp3";
-import "../assets/sounds/gameover.mp3";
-
 import { Field } from "./field";
 import { Tetrimino } from "./tetrimino";
 
@@ -139,12 +132,12 @@ export class GameState {
    */
   private static readonly SOUND_EFFECTS = {
     //パスを修正する
-    LOTATION: new Audio("../assets/sounds/rotation.mp3"),
-    GROUND: new Audio("../assets/sounds/ground.mp3"),
-    CLEAR: new Audio("../assets/sounds/clear.mp3"),
-    PLAY: new Audio("../assets/sounds/play.mp3"),
-    PAUSE: new Audio("../assets/sounds/pause.mp3"),
-    GAMEOVER: new Audio("../assets/sounds/gameover.mp3"),
+    LOTATION: new Audio("./assets/sounds/rotation.mp3"),
+    GROUND: new Audio("./assets/sounds/ground.mp3"),
+    CLEAR: new Audio("./assets/sounds/clear.mp3"),
+    PLAY: new Audio("./assets/sounds/play.mp3"),
+    PAUSE: new Audio("./assets/sounds/pause.mp3"),
+    GAMEOVER: new Audio("./assets/sounds/gameover.mp3"),
   };
 
   /**
