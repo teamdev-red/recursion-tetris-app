@@ -484,7 +484,7 @@ export class GameState {
       );
 
       //gameStart()でthis._holdedTetriminoがnullになるので，その場合は何もしない
-      if(tetrimino==null) return;
+      if (tetrimino == null) return;
 
       this.drawBlocks(
         tetrimino.value,
@@ -723,8 +723,16 @@ export class GameState {
    */
   private changeGameSpeed(gameSpeed: number): void {
     clearInterval(this._intervalId);
-    setInterval(() => this.dropTetrimino(), gameSpeed);
+    this._gameSpeed = gameSpeed;
+    this._intervalId = this.setDropTetriminoInterval();
   }
+
+  // public gameRestart(): void {
+  //   this._gameStatus = GameState.GAME_STATUS.PLAYING;
+  //   clearInterval(this._intervalId);
+  //   this.drawField();
+  //   
+  // }
 
   /**
    * テトリミノが揃ったか確認し，揃った行を削除する．
