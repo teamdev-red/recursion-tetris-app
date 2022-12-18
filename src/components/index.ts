@@ -1,3 +1,4 @@
+export * from "./controlsCard"
 export * from "./gameArea"
 export * from "./holdArea"
 export * from "./nextArea"

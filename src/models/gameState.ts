@@ -1,6 +1,9 @@
 import "../assets/sounds/rotation.mp3";
 import "../assets/sounds/ground.mp3";
 import "../assets/sounds/clear.mp3";
+import "../assets/sounds/play.mp3";
+import "../assets/sounds/pause.mp3";
+import "../assets/sounds/gameover.mp3";
 
 import { Field } from "./field";
 import { Tetrimino } from "./tetrimino";
@@ -51,6 +54,26 @@ export class GameState {
     "#FF0000", // I
     "#8F00FF", // O
   ];
+
+  /**
+   * 落下地点予測のblockの色
+   * blockの数値の値に対応する
+   */
+  private static readonly LANDING_POINT_BLOCK_COLORS = [
+    "#FFF", // 空白
+    "rgba(0, 255, 87, 0.1)", // Z
+    "rgba(250, 255, 0, 0.1)", // S
+    "rgba(255, 153, 0, 0.1)", // J
+    "rgba(0, 209, 255, 0.1)", // L
+    "rgba(0, 0, 255, 0.1)", // T
+    "rgba(255, 0, 0, 0.1)", // I
+    "rgba(143, 0, 255, 0.1)", // O
+  ];
+
+  private static readonly BODER_COLORS = {
+    WHITE: "#FFFFFF",
+    BLACK: "#000000",
+  };
 
   /**
    * 1ブロックのサイズ (px)
@@ -119,6 +142,9 @@ export class GameState {
     LOTATION: new Audio("../assets/sounds/rotation.mp3"),
     GROUND: new Audio("../assets/sounds/ground.mp3"),
     CLEAR: new Audio("../assets/sounds/clear.mp3"),
+    PLAY: new Audio("../assets/sounds/play.mp3"),
+    PAUSE: new Audio("../assets/sounds/pause.mp3"),
+    GAMEOVER: new Audio("../assets/sounds/gameover.mp3"),
   };
 
   /**
@@ -185,6 +211,8 @@ export class GameState {
       this._nextTetriminoContext
     );
     this._holdedTetrimino = null;
+    GameState.SOUND_EFFECTS.PLAY.currentTime = 0;
+    GameState.SOUND_EFFECTS.PLAY.play();
     if (this._intervalId) clearInterval(this._intervalId);
     this._intervalId = this.setDropTetriminoInterval();
   }
@@ -197,6 +225,8 @@ export class GameState {
     clearInterval(this._intervalId);
     this.drawField();
     this._intervalId = this.setDropTetriminoInterval();
+    GameState.SOUND_EFFECTS.PAUSE.currentTime = 0;
+    GameState.SOUND_EFFECTS.PAUSE.play();
   }
 
   /**
@@ -207,6 +237,8 @@ export class GameState {
     clearInterval(this._intervalId);
     this.drawField();
     this._intervalId = this.setDropTetriminoInterval();
+    GameState.SOUND_EFFECTS.PLAY.currentTime = 0;
+    GameState.SOUND_EFFECTS.PLAY.play();
   }
 
   /**
@@ -284,13 +316,22 @@ export class GameState {
    */
   private drawField(): void {
     this.clearField();
-    this.drawBlocks(this._field.value, 0, 0, this._context);
+    this.drawBlocks(
+      this._field.value,
+      0,
+      0,
+      this._context,
+      GameState.BLOCK_COLORS,
+      GameState.BODER_COLORS.BLACK);
     this.drawBlocks(
       this._currentTetrimino.value,
       this._currentTetrimino.x,
       this._currentTetrimino.y,
-      this._context
+      this._context,
+      GameState.BLOCK_COLORS,
+      GameState.BODER_COLORS.BLACK
     );
+    this.drawLandingPoint();
     if (this._gameStatus === GameState.GAME_STATUS.GAMEOVER) {
       this.drawGameOverScreen();
     }
@@ -310,12 +351,16 @@ export class GameState {
    * @param {number} [offsetX=0] ブロックを描画するときに使用する x オフセット
    * @param {number} [offsetY=0] ブロックを描画するときに使用する y オフセット
    * @param {CanvasRenderingContext2D} context 描画するコンテキスト
+   * @param {borderColor} string 描画するブロックの色
+   * @param {borderColor} string 描画するブロックの枠線の色
    */
   private drawBlocks(
     blocks: number[][],
     offsetX = 0,
     offsetY = 0,
-    context: CanvasRenderingContext2D
+    context: CanvasRenderingContext2D,
+    blockColor: string[],
+    borderColor: string
   ): void {
     for (let y = 0; y < blocks.length; y++) {
       for (let x = 0; x < blocks[y].length; x++) {
@@ -324,12 +369,32 @@ export class GameState {
             x + offsetX,
             y + offsetY,
             // blockの色とGameState.BLOCK_COLORSのindexを対応させている
-            GameState.BLOCK_COLORS[blocks[y][x]],
+            blockColor[blocks[y][x]],
+            borderColor,
             context
           );
         }
       }
     }
+  }
+
+  /**
+   * 落下地点予測を描画する
+   */
+  private drawLandingPoint(): void {
+    let plus = 0;
+    let newTetrimino = this._currentTetrimino.moveDown();
+    while (this.checkMove(newTetrimino)) {
+      newTetrimino.y++;
+      plus++;
+    }
+    this.drawBlocks(
+      this._currentTetrimino.value,
+      this._currentTetrimino.x,
+      this._currentTetrimino.y + plus,
+      this._context,
+      GameState.LANDING_POINT_BLOCK_COLORS,
+      GameState.BODER_COLORS.WHITE)
   }
 
   /**
@@ -352,21 +417,24 @@ export class GameState {
    *
    * @param {number} x ブロックの x 座標
    * @param {number} y ブロックの y 座標
+   * @param {string} blockColor ブロックの色
+   * @param {string} borderColor 枠線の色
    * @param {CanvasRenderingContext2D} context 描画するコンテキスト
    */
   private drawBlock(
     x: number,
     y: number,
-    color: string,
+    blockColor: string,
+    borderColor: string,
     context: CanvasRenderingContext2D
   ): void {
     let px = x * GameState.BLOCK_SIZE;
     let py = y * GameState.BLOCK_SIZE;
-    context.fillStyle = color;
+    context.fillStyle = blockColor;
     context.fillRect(px, py, GameState.BLOCK_SIZE, GameState.BLOCK_SIZE);
     // 呼ばれるごとに枠線が太くなるので，毎回リセットする
     context.lineWidth = 1;
-    context.strokeStyle = "black";
+    context.strokeStyle = borderColor;
     context.strokeRect(px, py, GameState.BLOCK_SIZE, GameState.BLOCK_SIZE);
   }
 
@@ -387,6 +455,8 @@ export class GameState {
       newTetrimino = this.initializeTetrimino();
       if (!this.checkMove(newTetrimino)) {
         this._gameStatus = GameState.GAME_STATUS.GAMEOVER;
+        GameState.SOUND_EFFECTS.GAMEOVER.currentTime = 0;
+        GameState.SOUND_EFFECTS.GAMEOVER.play();
         this.setPlayButton();
         this._maxScore = this._maxScore
           ? Math.max(this._maxScore, this._score)
@@ -415,16 +485,17 @@ export class GameState {
       );
 
       //gameStart()でthis._holdedTetriminoがnullになるので，その場合は何もしない
-      if(tetrimino==null) return;
+      if (tetrimino == null) return;
 
       this.drawBlocks(
         tetrimino.value,
         0,
         0,
-        context
+        context,
+        GameState.BLOCK_COLORS,
+        GameState.BODER_COLORS.BLACK,
       );
     }
-
 
   /**
    * scoreフィールドにスコアを表示する
@@ -647,6 +718,17 @@ export class GameState {
   }
 
   /**
+   * 落下速度を変化させる
+   *
+   * @param {number} gameSpeed ブロックの落下速度
+   */
+  private changeGameSpeed(gameSpeed: number): void {
+    clearInterval(this._intervalId);
+    this._gameSpeed = gameSpeed;
+    this._intervalId = this.setDropTetriminoInterval();
+  }
+
+  /**
    * テトリミノが揃ったか確認し，揃った行を削除する．
    * 1行揃うごとにSCORE_INCREASE点加算しスコアを返す
    *
@@ -678,7 +760,7 @@ export class GameState {
       this._gameSpeed > GameState.MAX_TETRIMINO_DROP_SPEED
     ) {
       this._gameSpeed -= 10 * line_count;
-      this.gameRestart();
+      this.changeGameSpeed(this._gameSpeed);
     }
 
     return score;
