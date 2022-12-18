@@ -12,7 +12,7 @@ p {
 }
 
 .score-area {
-  width: 200px;
+  width: 150px;
   height: 90px;
 }
 
@@ -24,7 +24,10 @@ p {
 .hold-area {
   width: 150px;
   height: 200px;
-  margin-top: 78px;
+}
+
+.controls-card{
+  width: 300px;  
 }
 
 .pause-button {
