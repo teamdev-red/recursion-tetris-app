@@ -1,3 +1,5 @@
+import { createGamePlayPage } from "../views/gamePlayPage";
+import { createStartPage } from "../views/startPage";
 import { Field } from "./field";
 import { Tetrimino } from "./tetrimino";
 
