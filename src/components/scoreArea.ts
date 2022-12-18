@@ -4,19 +4,16 @@
  */
 export const createScoreArea = (): HTMLDivElement => {
   let container = document.createElement('div');
-  // レスポンシブのグリッド幅(スマホ：100%, タブレット:50%、　PC：1/3)
-  container.classList.add('col-12', 'col-sm-6', 'col-lg', 'order-lg-1');
+  container.classList.add('d-flex', "flex-sm-column", 'mt-4');
 
   container.innerHTML = `
-    <div class="d-flex flex-column align-items-md-end align-items-center">
-      <div class="score-area bg-dark text-white p-2 mb-2">
-        <p class="h5">SCORE</p>
-        <p class="h2 text-right" id="score">0</p>
-      </div>
-      <div class="score-area bg-dark text-white p-2">
-        <p class="h5">MAX SCORE</p>
-        <p class="h2 text-right" id="max-score">0</p>
-      </div>
+    <div class="score-area bg-dark text-white mx-auto mx-sm-0 mb-2 p-2">
+      <p class="h5">SCORE</p>
+      <p class="h2 text-right" id="score">0</p>
+    </div>
+    <div class="score-area bg-dark text-white mx-auto mx-sm-0 p-2">
+      <p class="h5">MAX SCORE</p>
+      <p class="h2 text-right" id="max-score">0</p>
     </div>
   `;
 
