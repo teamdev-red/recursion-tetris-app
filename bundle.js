@@ -24375,8 +24375,9 @@ var GameState = /** @class */ (function () {
      */
     GameState.prototype.drawField = function () {
         this.clearField();
-        this.drawBlocks(this._field.value, 0, 0, this._context);
-        this.drawBlocks(this._currentTetrimino.value, this._currentTetrimino.x, this._currentTetrimino.y, this._context);
+        this.drawBlocks(this._field.value, 0, 0, this._context, GameState.BLOCK_COLORS, GameState.BODER_COLORS.BLACK);
+        this.drawBlocks(this._currentTetrimino.value, this._currentTetrimino.x, this._currentTetrimino.y, this._context, GameState.BLOCK_COLORS, GameState.BODER_COLORS.BLACK);
+        this.drawLandingPoint();
         if (this._gameStatus === GameState.GAME_STATUS.GAMEOVER) {
             this.drawGameOverScreen();
         }
@@ -24394,8 +24395,10 @@ var GameState = /** @class */ (function () {
      * @param {number} [offsetX=0] ブロックを描画するときに使用する x オフセット
      * @param {number} [offsetY=0] ブロックを描画するときに使用する y オフセット
      * @param {CanvasRenderingContext2D} context 描画するコンテキスト
+     * @param {borderColor} string 描画するブロックの色
+     * @param {borderColor} string 描画するブロックの枠線の色
      */
-    GameState.prototype.drawBlocks = function (blocks, offsetX, offsetY, context) {
+    GameState.prototype.drawBlocks = function (blocks, offsetX, offsetY, context, blockColor, borderColor) {
         if (offsetX === void 0) { offsetX = 0; }
         if (offsetY === void 0) { offsetY = 0; }
         for (var y = 0; y < blocks.length; y++) {
@@ -24403,10 +24406,22 @@ var GameState = /** @class */ (function () {
                 if (blocks[y][x]) {
                     this.drawBlock(x + offsetX, y + offsetY, 
                     // blockの色とGameState.BLOCK_COLORSのindexを対応させている
-                    GameState.BLOCK_COLORS[blocks[y][x]], context);
+                    blockColor[blocks[y][x]], borderColor, context);
                 }
             }
         }
+    };
+    /**
+     * 落下地点予測を描画する
+     */
+    GameState.prototype.drawLandingPoint = function () {
+        var plus = 0;
+        var newTetrimino = this._currentTetrimino.moveDown();
+        while (this.checkMove(newTetrimino)) {
+            newTetrimino.y++;
+            plus++;
+        }
+        this.drawBlocks(this._currentTetrimino.value, this._currentTetrimino.x, this._currentTetrimino.y + plus, this._context, GameState.LANDING_POINT_BLOCK_COLORS, GameState.BODER_COLORS.WHITE);
     };
     /**
      * 最終スコアを含むゲームオーバー画面を描画する
@@ -24427,16 +24442,18 @@ var GameState = /** @class */ (function () {
      *
      * @param {number} x ブロックの x 座標
      * @param {number} y ブロックの y 座標
+     * @param {string} blockColor ブロックの色
+     * @param {string} borderColor 枠線の色
      * @param {CanvasRenderingContext2D} context 描画するコンテキスト
      */
-    GameState.prototype.drawBlock = function (x, y, color, context) {
+    GameState.prototype.drawBlock = function (x, y, blockColor, borderColor, context) {
         var px = x * GameState.BLOCK_SIZE;
         var py = y * GameState.BLOCK_SIZE;
-        context.fillStyle = color;
+        context.fillStyle = blockColor;
         context.fillRect(px, py, GameState.BLOCK_SIZE, GameState.BLOCK_SIZE);
         // 呼ばれるごとに枠線が太くなるので，毎回リセットする
         context.lineWidth = 1;
-        context.strokeStyle = "black";
+        context.strokeStyle = borderColor;
         context.strokeRect(px, py, GameState.BLOCK_SIZE, GameState.BLOCK_SIZE);
     };
     /**
@@ -24478,7 +24495,7 @@ var GameState = /** @class */ (function () {
         //gameStart()でthis._holdedTetriminoがnullになるので，その場合は何もしない
         if (tetrimino == null)
             return;
-        this.drawBlocks(tetrimino.value, 0, 0, context);
+        this.drawBlocks(tetrimino.value, 0, 0, context, GameState.BLOCK_COLORS, GameState.BODER_COLORS.BLACK);
     };
     /**
      * scoreフィールドにスコアを表示する
@@ -24751,6 +24768,24 @@ var GameState = /** @class */ (function () {
         "#FF0000",
         "#8F00FF", // O
     ];
+    /**
+     * 落下地点予測のblockの色
+     * blockの数値の値に対応する
+     */
+    GameState.LANDING_POINT_BLOCK_COLORS = [
+        "#FFF",
+        "rgba(0, 255, 87, 0.1)",
+        "rgba(250, 255, 0, 0.1)",
+        "rgba(255, 153, 0, 0.1)",
+        "rgba(0, 209, 255, 0.1)",
+        "rgba(0, 0, 255, 0.1)",
+        "rgba(255, 0, 0, 0.1)",
+        "rgba(143, 0, 255, 0.1)", // O
+    ];
+    GameState.BODER_COLORS = {
+        WHITE: "#FFFFFF",
+        BLACK: "#000000",
+    };
     /**
      * 1ブロックのサイズ (px)
      */
