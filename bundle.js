@@ -24075,9 +24075,9 @@ __webpack_require__.r(__webpack_exports__);
  * @return {HTMLDivElement} ホールドしたテトリミノ表示エリアのdiv要素
  */
 var createHoldArea = function () {
-    var container = document.createElement('div');
-    container.classList.add('d-flex', 'justify-content-sm-end');
-    container.innerHTML = "\n    <div class=\"hold-area bg-dark p-2\">\n      <p class=\"h5 text-center text-white\">HOLD</p>\n    </div>\n  ";
+    var container = document.createElement("div");
+    container.classList.add("d-flex", "justify-content-sm-end");
+    container.innerHTML = "\n    <div class=\"hold-area bg-dark p-2 d-flex flex-column justify-content-center align-items-center\">\n      <p class=\"h5 text-center text-white\">HOLD</p>\n    </div>\n  ";
     return container;
 };
 
@@ -24138,7 +24138,7 @@ var createNextArea = function () {
     var container = document.createElement('div');
     // レスポンシブのグリッド幅(スマホ：表示なし, タブレット:50%、 PC：1/3)
     container.classList.add('d-none', 'd-sm-block', 'd-md-block');
-    container.innerHTML = "\n    <div class=\"next-area bg-dark p-2\">\n      <p class=\"h5 text-center text-white\">NEXT</p>\n    </div>\n  ";
+    container.innerHTML = "\n    <div class=\"next-area bg-dark p-2 d-flex flex-column justify-content-center align-items-center\">\n      <p class=\"h5 text-center text-white\">NEXT</p>\n    </div>\n  ";
     return container;
 };
 
@@ -25136,36 +25136,36 @@ var Tetrimino = /** @class */ (function () {
         // Z
         [
             [0, 0, 0, 0],
-            [1, 1, 0, 0],
             [0, 1, 1, 0],
+            [0, , 1, 1],
             [0, 0, 0, 0],
         ],
         // S
         [
             [0, 0, 0, 0],
+            [0, 0, 2, 2],
             [0, 2, 2, 0],
-            [2, 2, 0, 0],
             [0, 0, 0, 0],
         ],
         // J
         [
             [0, 0, 0, 0],
-            [3, 0, 0, 0],
-            [3, 3, 3, 0],
+            [0, 3, 0, 0],
+            [0, 3, 3, 3],
             [0, 0, 0, 0],
         ],
         // L
         [
             [0, 0, 0, 0],
-            [0, 0, 4, 0],
-            [4, 4, 4, 0],
+            [0, 0, 0, 4],
+            [0, 4, 4, 4],
             [0, 0, 0, 0],
         ],
         // T
         [
             [0, 0, 0, 0],
-            [5, 5, 5, 0],
-            [0, 5, 0, 0],
+            [0, 5, 5, 5],
+            [0, 0, 5, 0],
             [0, 0, 0, 0],
         ],
         // I
