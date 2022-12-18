@@ -727,13 +727,6 @@ export class GameState {
     this._intervalId = this.setDropTetriminoInterval();
   }
 
-  // public gameRestart(): void {
-  //   this._gameStatus = GameState.GAME_STATUS.PLAYING;
-  //   clearInterval(this._intervalId);
-  //   this.drawField();
-  //   
-  // }
-
   /**
    * テトリミノが揃ったか確認し，揃った行を削除する．
    * 1行揃うごとにSCORE_INCREASE点加算しスコアを返す
