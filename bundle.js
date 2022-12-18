@@ -24257,20 +24257,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "GameState": () => (/* binding */ GameState)
 /* harmony export */ });
-/* harmony import */ var _assets_sounds_rotation_mp3__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../assets/sounds/rotation.mp3 */ "./src/assets/sounds/rotation.mp3");
-/* harmony import */ var _assets_sounds_ground_mp3__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../assets/sounds/ground.mp3 */ "./src/assets/sounds/ground.mp3");
-/* harmony import */ var _assets_sounds_clear_mp3__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../assets/sounds/clear.mp3 */ "./src/assets/sounds/clear.mp3");
-/* harmony import */ var _assets_sounds_play_mp3__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../assets/sounds/play.mp3 */ "./src/assets/sounds/play.mp3");
-/* harmony import */ var _assets_sounds_pause_mp3__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../assets/sounds/pause.mp3 */ "./src/assets/sounds/pause.mp3");
-/* harmony import */ var _assets_sounds_gameover_mp3__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../assets/sounds/gameover.mp3 */ "./src/assets/sounds/gameover.mp3");
-/* harmony import */ var _field__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./field */ "./src/models/field.ts");
-/* harmony import */ var _tetrimino__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./tetrimino */ "./src/models/tetrimino.ts");
-
-
-
-
-
-
+/* harmony import */ var _field__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./field */ "./src/models/field.ts");
+/* harmony import */ var _tetrimino__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./tetrimino */ "./src/models/tetrimino.ts");
 
 
 /**
@@ -24316,8 +24304,8 @@ var GameState = /** @class */ (function () {
     };
     GameState.prototype.createNextTetriminoField = function () {
         var nextTetriminoField = document.createElement("canvas");
-        nextTetriminoField.width = GameState.BLOCK_SIZE * _tetrimino__WEBPACK_IMPORTED_MODULE_7__.Tetrimino.TETRIMINO_SIZE;
-        nextTetriminoField.height = GameState.BLOCK_SIZE * _tetrimino__WEBPACK_IMPORTED_MODULE_7__.Tetrimino.TETRIMINO_SIZE;
+        nextTetriminoField.width = GameState.BLOCK_SIZE * _tetrimino__WEBPACK_IMPORTED_MODULE_1__.Tetrimino.TETRIMINO_SIZE;
+        nextTetriminoField.height = GameState.BLOCK_SIZE * _tetrimino__WEBPACK_IMPORTED_MODULE_1__.Tetrimino.TETRIMINO_SIZE;
         this._nextTetriminoContext = nextTetriminoField.getContext("2d");
         // クラス名を直接指定して，要素を取得してので，クラス名が変わると動かなくなる．
         this._view.querySelector(".next-area").appendChild(nextTetriminoField);
@@ -24327,9 +24315,9 @@ var GameState = /** @class */ (function () {
     GameState.prototype.createHoldedTetriminoField = function () {
         var holdedTetriminoField = document.createElement("canvas");
         holdedTetriminoField.width =
-            GameState.BLOCK_SIZE * _tetrimino__WEBPACK_IMPORTED_MODULE_7__.Tetrimino.TETRIMINO_SIZE;
+            GameState.BLOCK_SIZE * _tetrimino__WEBPACK_IMPORTED_MODULE_1__.Tetrimino.TETRIMINO_SIZE;
         holdedTetriminoField.height =
-            GameState.BLOCK_SIZE * _tetrimino__WEBPACK_IMPORTED_MODULE_7__.Tetrimino.TETRIMINO_SIZE;
+            GameState.BLOCK_SIZE * _tetrimino__WEBPACK_IMPORTED_MODULE_1__.Tetrimino.TETRIMINO_SIZE;
         this._holdedTetriminoContext = holdedTetriminoField.getContext("2d");
         // クラス名を直接指定して，要素を取得してので，クラス名が変わると動かなくなる．
         this._view.querySelector(".hold-area").appendChild(holdedTetriminoField);
@@ -24422,7 +24410,7 @@ var GameState = /** @class */ (function () {
      * @returns {Field} 初期化されたフィールド
      */
     GameState.prototype.initializeField = function () {
-        return new _field__WEBPACK_IMPORTED_MODULE_6__.Field(GameState.FIELD_COL, GameState.FIELD_ROW);
+        return new _field__WEBPACK_IMPORTED_MODULE_0__.Field(GameState.FIELD_COL, GameState.FIELD_ROW);
     };
     /**
      * テトリミノを初期化する
@@ -24430,8 +24418,8 @@ var GameState = /** @class */ (function () {
      * @returns {Tetrimino} 初期化されたテトリミノ
      */
     GameState.prototype.initializeTetrimino = function () {
-        var tetri_type = Math.floor(Math.random() * _tetrimino__WEBPACK_IMPORTED_MODULE_7__.Tetrimino.TETRIMINO_TYPES_COUNT);
-        return new _tetrimino__WEBPACK_IMPORTED_MODULE_7__.Tetrimino(tetri_type, GameState.START_X - _tetrimino__WEBPACK_IMPORTED_MODULE_7__.Tetrimino.TETRIMINO_SIZE + 2, GameState.START_Y);
+        var tetri_type = Math.floor(Math.random() * _tetrimino__WEBPACK_IMPORTED_MODULE_1__.Tetrimino.TETRIMINO_TYPES_COUNT);
+        return new _tetrimino__WEBPACK_IMPORTED_MODULE_1__.Tetrimino(tetri_type, GameState.START_X - _tetrimino__WEBPACK_IMPORTED_MODULE_1__.Tetrimino.TETRIMINO_SIZE + 2, GameState.START_Y);
     };
     /**
      * 現在のゲームの状態を描画する
@@ -24556,7 +24544,7 @@ var GameState = /** @class */ (function () {
     };
     //this._nextTetriminoをとthis._holdedTetriminoを描画するために使用
     GameState.prototype.drawTetriminoInSubWindow = function (tetrimino, context) {
-        context.clearRect(0, 0, GameState.BLOCK_SIZE * _tetrimino__WEBPACK_IMPORTED_MODULE_7__.Tetrimino.TETRIMINO_SIZE, GameState.BLOCK_SIZE * _tetrimino__WEBPACK_IMPORTED_MODULE_7__.Tetrimino.TETRIMINO_SIZE);
+        context.clearRect(0, 0, GameState.BLOCK_SIZE * _tetrimino__WEBPACK_IMPORTED_MODULE_1__.Tetrimino.TETRIMINO_SIZE, GameState.BLOCK_SIZE * _tetrimino__WEBPACK_IMPORTED_MODULE_1__.Tetrimino.TETRIMINO_SIZE);
         //gameStart()でthis._holdedTetriminoがnullになるので，その場合は何もしない
         if (tetrimino == null)
             return;
@@ -24722,8 +24710,8 @@ var GameState = /** @class */ (function () {
      * @return {boolean} 移動可能かどうか
      */
     GameState.prototype.checkMoveWithinField = function (newTetrimino) {
-        for (var y = 0; y < _tetrimino__WEBPACK_IMPORTED_MODULE_7__.Tetrimino.TETRIMINO_SIZE; y++) {
-            for (var x = 0; x < _tetrimino__WEBPACK_IMPORTED_MODULE_7__.Tetrimino.TETRIMINO_SIZE; x++) {
+        for (var y = 0; y < _tetrimino__WEBPACK_IMPORTED_MODULE_1__.Tetrimino.TETRIMINO_SIZE; y++) {
+            for (var x = 0; x < _tetrimino__WEBPACK_IMPORTED_MODULE_1__.Tetrimino.TETRIMINO_SIZE; x++) {
                 var nx = newTetrimino.x + x;
                 var ny = newTetrimino.y + y;
                 if (newTetrimino.value[y][x]) {
@@ -24746,8 +24734,8 @@ var GameState = /** @class */ (function () {
      *                  重なっていない場合はtrueを返す
      */
     GameState.prototype.checkMoveOverlapping = function (newTetrimino) {
-        for (var y = 0; y < _tetrimino__WEBPACK_IMPORTED_MODULE_7__.Tetrimino.TETRIMINO_SIZE; y++) {
-            for (var x = 0; x < _tetrimino__WEBPACK_IMPORTED_MODULE_7__.Tetrimino.TETRIMINO_SIZE; x++) {
+        for (var y = 0; y < _tetrimino__WEBPACK_IMPORTED_MODULE_1__.Tetrimino.TETRIMINO_SIZE; y++) {
+            for (var x = 0; x < _tetrimino__WEBPACK_IMPORTED_MODULE_1__.Tetrimino.TETRIMINO_SIZE; x++) {
                 var nx = newTetrimino.x + x;
                 var ny = newTetrimino.y + y;
                 if (newTetrimino.value[y][x]) {
@@ -24763,8 +24751,8 @@ var GameState = /** @class */ (function () {
      * テトリミノをゲームフィールド上の所定の位置に固定する
      */
     GameState.prototype.fixTetrimino = function () {
-        for (var y = 0; y < _tetrimino__WEBPACK_IMPORTED_MODULE_7__.Tetrimino.TETRIMINO_SIZE; y++) {
-            for (var x = 0; x < _tetrimino__WEBPACK_IMPORTED_MODULE_7__.Tetrimino.TETRIMINO_SIZE; x++) {
+        for (var y = 0; y < _tetrimino__WEBPACK_IMPORTED_MODULE_1__.Tetrimino.TETRIMINO_SIZE; y++) {
+            for (var x = 0; x < _tetrimino__WEBPACK_IMPORTED_MODULE_1__.Tetrimino.TETRIMINO_SIZE; x++) {
                 if (this._currentTetrimino.value[y][x]) {
                     this._field.value[this._currentTetrimino.y + y][this._currentTetrimino.x + x] = this._currentTetrimino.value[y][x];
                 }
@@ -24913,12 +24901,13 @@ var GameState = /** @class */ (function () {
      * ゲームの状態を表す定数
      */
     GameState.SOUND_EFFECTS = {
-        LOTATION: new Audio("../assets/sounds/rotation.mp3"),
-        GROUND: new Audio("../assets/sounds/ground.mp3"),
-        CLEAR: new Audio("../assets/sounds/clear.mp3"),
-        PLAY: new Audio("../assets/sounds/play.mp3"),
-        PAUSE: new Audio("../assets/sounds/pause.mp3"),
-        GAMEOVER: new Audio("../assets/sounds/gameover.mp3"),
+        //パスを修正する
+        LOTATION: new Audio("./assets/sounds/rotation.mp3"),
+        GROUND: new Audio("./assets/sounds/ground.mp3"),
+        CLEAR: new Audio("./assets/sounds/clear.mp3"),
+        PLAY: new Audio("./assets/sounds/play.mp3"),
+        PAUSE: new Audio("./assets/sounds/pause.mp3"),
+        GAMEOVER: new Audio("./assets/sounds/gameover.mp3"),
     };
     return GameState;
 }());
@@ -25442,9 +25431,21 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _fortawesome_fontawesome_free_js_solid__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(_fortawesome_fontawesome_free_js_solid__WEBPACK_IMPORTED_MODULE_3__);
 /* harmony import */ var _fortawesome_fontawesome_free_js_regular__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! @fortawesome/fontawesome-free/js/regular */ "./node_modules/@fortawesome/fontawesome-free/js/regular.js");
 /* harmony import */ var _fortawesome_fontawesome_free_js_regular__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(_fortawesome_fontawesome_free_js_regular__WEBPACK_IMPORTED_MODULE_4__);
-/* harmony import */ var _styles_css__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./styles.css */ "./src/styles.css");
-/* harmony import */ var _models_gameState__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./models/gameState */ "./src/models/gameState.ts");
-/* harmony import */ var _views_gamePlayPage__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./views/gamePlayPage */ "./src/views/gamePlayPage.ts");
+/* harmony import */ var _assets_sounds_rotation_mp3__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./assets/sounds/rotation.mp3 */ "./src/assets/sounds/rotation.mp3");
+/* harmony import */ var _assets_sounds_ground_mp3__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./assets/sounds/ground.mp3 */ "./src/assets/sounds/ground.mp3");
+/* harmony import */ var _assets_sounds_clear_mp3__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./assets/sounds/clear.mp3 */ "./src/assets/sounds/clear.mp3");
+/* harmony import */ var _assets_sounds_play_mp3__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./assets/sounds/play.mp3 */ "./src/assets/sounds/play.mp3");
+/* harmony import */ var _assets_sounds_pause_mp3__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./assets/sounds/pause.mp3 */ "./src/assets/sounds/pause.mp3");
+/* harmony import */ var _assets_sounds_gameover_mp3__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./assets/sounds/gameover.mp3 */ "./src/assets/sounds/gameover.mp3");
+/* harmony import */ var _styles_css__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ./styles.css */ "./src/styles.css");
+/* harmony import */ var _models_gameState__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! ./models/gameState */ "./src/models/gameState.ts");
+/* harmony import */ var _views_gamePlayPage__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! ./views/gamePlayPage */ "./src/views/gamePlayPage.ts");
+
+
+
+
+
+
 
 
 
@@ -25454,9 +25455,9 @@ __webpack_require__.r(__webpack_exports__);
 
 
 var app = document.querySelector("#app");
-var gamePlayPage = (0,_views_gamePlayPage__WEBPACK_IMPORTED_MODULE_7__.createGamePlayPage)();
+var gamePlayPage = (0,_views_gamePlayPage__WEBPACK_IMPORTED_MODULE_13__.createGamePlayPage)();
 app.appendChild(gamePlayPage);
-var gameState = new _models_gameState__WEBPACK_IMPORTED_MODULE_6__.GameState(gamePlayPage);
+var gameState = new _models_gameState__WEBPACK_IMPORTED_MODULE_12__.GameState(gamePlayPage);
 
 })();
 
