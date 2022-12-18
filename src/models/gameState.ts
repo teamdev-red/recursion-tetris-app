@@ -150,6 +150,7 @@ export class GameState {
     // ゲーム開始時は，ゲームオーバー状態
     this._gameStatus = GameState.GAME_STATUS.GAMEOVER;
     this.renderStartPage();
+    this.setSelectHandler();
   }
 
   private renderStartPage(): void {
@@ -313,6 +314,14 @@ export class GameState {
     }
   }
 
+  /**
+   * スタートページの難易度選択欄にonchangeイベントを登録する
+   */
+  private setSelectHandler(): void {
+    let difficultyLevel = document.getElementById('difficultyLevel') as HTMLInputElement;
+    difficultyLevel.onchange = this.setDifficultyLevel;
+  }
+  
   /**
    * フィールドを初期化する
    *
