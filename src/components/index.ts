@@ -1,4 +1,4 @@
-export * from "./controlsCard"
+export * from "./controlsCardModal"
 export * from "./gameArea"
 export * from "./holdArea"
 export * from "./nextArea"
