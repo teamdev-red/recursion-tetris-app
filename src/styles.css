@@ -26,6 +26,10 @@ p {
   height: 200px;
 }
 
+.controls-card{
+  width: 300px;  
+}
+
 .pause-button {
   border: none;
   outline: none;
