@@ -115,7 +115,11 @@ export class GameState {
   /**
    * テトリミノの落下速度の初期値 (ms)
    */
-  private static INITIAL_TETRIMINO_DROP_SPEED = 400;
+  private static readonly INITIAL_TETRIMINO_DROP_SPEED = {
+    easy: 400,
+    normal: 300,
+    hard: 200,
+  }
 
   /**
    * テトリミノの最大落下速度 (ms)
@@ -151,13 +155,15 @@ export class GameState {
     this._view = view;
     // ゲーム開始時は，ゲームオーバー状態
     this._gameStatus = GameState.GAME_STATUS.GAMEOVER;
+    this.setKeydownMoveTetriminoHandler();
+    this.setKeyDownPauseHandler();
     this.renderStartPage();
-    this.setSelectHandler();
   }
 
   private renderStartPage(): void {
     this._view.innerHTML = ``;
     this._view.appendChild(createStartPage());
+    this.setDifficultySelectHandler();
     document.querySelector("#gameStart").addEventListener("click", () => {
       this.renderGamePlayPage();
     })
@@ -169,8 +175,6 @@ export class GameState {
     this.createGameField();
     this.createNextTetriminoField();
     this.createHoldedTetriminoField();
-    this.setKeydownMoveTetriminoHandler();
-    this.setKeyDownPauseHandler();
     this.pauseGameOnModalShow();
     this.setClickHandler();
     this.gameStart();
@@ -217,7 +221,6 @@ export class GameState {
   public gameStart(): void {
     this._gameStatus = GameState.GAME_STATUS.PLAYING;
     this._score = 0;
-    this._gameSpeed = GameState.INITIAL_TETRIMINO_DROP_SPEED;
     this._field = this.initializeField();
     this._currentTetrimino = this.initializeTetrimino();
     this.drawField();
@@ -238,6 +241,7 @@ export class GameState {
    * ゲームを一時停止する
    */
   public gamePause(): void {
+    if(this._gameStatus === GameState.GAME_STATUS.GAMEOVER) return;
     this._gameStatus = GameState.GAME_STATUS.PAUSE;
     clearInterval(this._intervalId);
     this.drawField();
@@ -250,6 +254,7 @@ export class GameState {
    * ゲームを再開する
    */
   public gameRestart(): void {
+    if(this._gameStatus === GameState.GAME_STATUS.GAMEOVER) return;
     this._gameStatus = GameState.GAME_STATUS.PLAYING;
     clearInterval(this._intervalId);
     this.drawField();
@@ -278,13 +283,13 @@ export class GameState {
 
   private pauseGameOnModalShow(): void {
     $('.modal').on('show.bs.modal', () => {
-      console.log("modal open");
       this.gamePause();
     });
 
     $('.modal').on('hidden.bs.modal', () => {
-      console.log("modal close");
-      this.gameRestart();
+      if(this._gameStatus === GameState.GAME_STATUS.PAUSE){
+        this.gameRestart();
+      }
     });
   }
 
@@ -322,22 +327,24 @@ export class GameState {
   private setDifficultyLevel(): void {
     let difficultyLevel = document.getElementById('difficultyLevel') as HTMLInputElement;
     if (difficultyLevel.value === 'easy') {
-      GameState.INITIAL_TETRIMINO_DROP_SPEED = 500;
+      this._gameSpeed = GameState.INITIAL_TETRIMINO_DROP_SPEED.easy;
     } else if (difficultyLevel.value === 'normal') {
-      GameState.INITIAL_TETRIMINO_DROP_SPEED = 400;
+      this._gameSpeed = GameState.INITIAL_TETRIMINO_DROP_SPEED.normal;
     } else if (difficultyLevel.value === 'hard') {
-      GameState.INITIAL_TETRIMINO_DROP_SPEED = 300;
+      this._gameSpeed = GameState.INITIAL_TETRIMINO_DROP_SPEED.hard;
     }
   }
 
   /**
    * スタートページの難易度選択欄にonchangeイベントを登録する
    */
-  private setSelectHandler(): void {
+  private setDifficultySelectHandler(): void {
     let difficultyLevel = document.getElementById('difficultyLevel') as HTMLInputElement;
-    difficultyLevel.onchange = this.setDifficultyLevel;
+    difficultyLevel.addEventListener('change', () => {
+      this.setDifficultyLevel();
+    });
   }
-  
+
   /**
    * フィールドを初期化する
    *
@@ -638,6 +645,7 @@ export class GameState {
   private setDropTetriminoInterval(): NodeJS.Timer {
     if (this._gameStatus !== GameState.GAME_STATUS.PLAYING)
       return this._intervalId;
+    if(!this._gameSpeed) this._gameSpeed = GameState.INITIAL_TETRIMINO_DROP_SPEED.normal;
     return setInterval(() => this.dropTetrimino(), this._gameSpeed);
   }
 
