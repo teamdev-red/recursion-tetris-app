@@ -10,7 +10,7 @@ export const createBootstrapSelect = (): HTMLDivElement => {
   container.innerHTML = `
     <p>DIFFICULT LEVEL</p>
       <select
-        id="difficultLevel"
+        id="difficultyLevel"
         class="custom-select custom-select-lg shadow"
         style="background-color: aliceblue"
       >

@@ -13,9 +13,9 @@ export const createStartPage = (): HTMLDivElement => {
   `;
 
   const startButton = createBootstrapBtn('GAME START', 'primary', 'gameStart');
-  const difficultLevel = createBootstrapSelect();
+  const difficultyLevel = createBootstrapSelect();
 
-  container.append(startButton, difficultLevel);
+  container.append(startButton, difficultyLevel);
 
   return container;
 };
