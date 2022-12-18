@@ -12,7 +12,7 @@ jobs:
       - uses: actions/checkout@v2
       - name: Build
         run: |
-          num install && npm run build
+          npm install && npm run build
       - name: Deploy
         uses: peaceiris/actions-gh-pages@v3
         with:
