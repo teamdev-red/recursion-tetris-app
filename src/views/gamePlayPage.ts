@@ -1,5 +1,5 @@
 import {
-  createControlsCard,
+  createControlsCardModal,
   createGameArea,
   createHoldArea,
   createNextArea,
@@ -27,7 +27,7 @@ export const createGamePlayPage = (): HTMLDivElement => {
   const gameArea = createGameArea();
   const nextArea = createNextArea();
   const scoreArea = createScoreArea();
-  const controlsCard = createControlsCard();
+  const controlsCard = createControlsCardModal();
   const pausedModal = createPausedModal();
 
   // PCサイズの左側エリア（HOLDと操作方法）
