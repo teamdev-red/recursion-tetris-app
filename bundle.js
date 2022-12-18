@@ -23970,6 +23970,35 @@ module.exports = styleTagTransform;
 
 /***/ }),
 
+/***/ "./src/components/bootstrapBtn.ts":
+/*!****************************************!*\
+  !*** ./src/components/bootstrapBtn.ts ***!
+  \****************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "createBootstrapBtn": () => (/* binding */ createBootstrapBtn)
+/* harmony export */ });
+/**
+ * bootstrapのボタンを作成する関数
+ * @param {string} text ボタン内のテキスト
+ * @param {string} type bootstrapボタンのタイプ（primary,secondaryなど）
+ * @param {string} id ボタンタグのid
+ * @return {HTMLDivElement} bootstrapのボタンのdiv要素
+ */
+var createBootstrapBtn = function (text, type, id) {
+    var container = document.createElement('div');
+    container.classList.add('my-4', 'mx-auto');
+    container.style.width = '200px';
+    container.innerHTML = "\n    <button type=\"button\" id=\"".concat(id, "\" class=\"btn btn-outline-").concat(type, " btn-lg btn-block\">").concat(text, "</button>\n  ");
+    return container;
+};
+
+
+/***/ }),
+
 /***/ "./src/components/controlsCard.ts":
 /*!****************************************!*\
   !*** ./src/components/controlsCard.ts ***!
@@ -24182,7 +24211,7 @@ __webpack_require__.r(__webpack_exports__);
 var createTitleArea = function () {
     var container = document.createElement('div');
     container.classList.add('row');
-    container.innerHTML = "\n    <div class=\"col-4 mx-auto\">\n      <div class=\"d-flex justify-content-center align-items-center\">\n        <h1 class=\"text-center py-3 mr-3 mb-0\">TETRIS</h1>\n        <div id=\"pauseButton\">\n          <i class=\"fa-solid fa-circle-play fa-2x text-secondary clickable\"></i>\n        </div>\n      </div>\n    </div>\n  ";
+    container.innerHTML = "\n    <div class=\"col-4 mx-auto\">\n      <div class=\"d-flex justify-content-center align-items-center\">\n        <h1 id=\"game-title\" class=\"text-center py-3 mr-3 mb-0 clickable\">TETRIS</h1>\n        <div id=\"pauseButton\">\n          <i class=\"fa-solid fa-circle-play fa-2x text-secondary clickable\"></i>\n        </div>\n      </div>\n    </div>\n  ";
     return container;
 };
 
@@ -24257,8 +24286,12 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "GameState": () => (/* binding */ GameState)
 /* harmony export */ });
-/* harmony import */ var _field__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./field */ "./src/models/field.ts");
-/* harmony import */ var _tetrimino__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./tetrimino */ "./src/models/tetrimino.ts");
+/* harmony import */ var _views_gamePlayPage__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../views/gamePlayPage */ "./src/views/gamePlayPage.ts");
+/* harmony import */ var _views_startPage__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../views/startPage */ "./src/views/startPage.ts");
+/* harmony import */ var _field__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./field */ "./src/models/field.ts");
+/* harmony import */ var _tetrimino__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./tetrimino */ "./src/models/tetrimino.ts");
+
+
 
 
 /**
@@ -24286,13 +24319,30 @@ var GameState = /** @class */ (function () {
         this._view = view;
         // ゲーム開始時は，ゲームオーバー状態
         this._gameStatus = GameState.GAME_STATUS.GAMEOVER;
+        this.renderStartPage();
+    }
+    GameState.prototype.renderStartPage = function () {
+        var _this = this;
+        this._view.innerHTML = "";
+        this._view.appendChild((0,_views_startPage__WEBPACK_IMPORTED_MODULE_1__.createStartPage)());
+        document.querySelector("#gameStart").addEventListener("click", function () {
+            _this.renderGamePlayPage();
+        });
+    };
+    GameState.prototype.renderGamePlayPage = function () {
+        var _this = this;
+        this._view.innerHTML = "";
+        this._view.appendChild((0,_views_gamePlayPage__WEBPACK_IMPORTED_MODULE_0__.createGamePlayPage)());
         this.createGameField();
         this.createNextTetriminoField();
         this.createHoldedTetriminoField();
         this.setKeydownMoveTetriminoHandler();
         this.setKeyDownPauseHandler();
         this.setClickHandler();
-    }
+        document.querySelector("#game-title").addEventListener("click", function () {
+            _this.renderStartPage();
+        });
+    };
     GameState.prototype.createGameField = function () {
         var gameField = document.createElement("canvas");
         gameField.width = GameState.SCREEN_W;
@@ -24304,8 +24354,8 @@ var GameState = /** @class */ (function () {
     };
     GameState.prototype.createNextTetriminoField = function () {
         var nextTetriminoField = document.createElement("canvas");
-        nextTetriminoField.width = GameState.BLOCK_SIZE * _tetrimino__WEBPACK_IMPORTED_MODULE_1__.Tetrimino.TETRIMINO_SIZE;
-        nextTetriminoField.height = GameState.BLOCK_SIZE * _tetrimino__WEBPACK_IMPORTED_MODULE_1__.Tetrimino.TETRIMINO_SIZE;
+        nextTetriminoField.width = GameState.BLOCK_SIZE * _tetrimino__WEBPACK_IMPORTED_MODULE_3__.Tetrimino.TETRIMINO_SIZE;
+        nextTetriminoField.height = GameState.BLOCK_SIZE * _tetrimino__WEBPACK_IMPORTED_MODULE_3__.Tetrimino.TETRIMINO_SIZE;
         this._nextTetriminoContext = nextTetriminoField.getContext("2d");
         // クラス名を直接指定して，要素を取得してので，クラス名が変わると動かなくなる．
         this._view.querySelector(".next-area").appendChild(nextTetriminoField);
@@ -24315,9 +24365,9 @@ var GameState = /** @class */ (function () {
     GameState.prototype.createHoldedTetriminoField = function () {
         var holdedTetriminoField = document.createElement("canvas");
         holdedTetriminoField.width =
-            GameState.BLOCK_SIZE * _tetrimino__WEBPACK_IMPORTED_MODULE_1__.Tetrimino.TETRIMINO_SIZE;
+            GameState.BLOCK_SIZE * _tetrimino__WEBPACK_IMPORTED_MODULE_3__.Tetrimino.TETRIMINO_SIZE;
         holdedTetriminoField.height =
-            GameState.BLOCK_SIZE * _tetrimino__WEBPACK_IMPORTED_MODULE_1__.Tetrimino.TETRIMINO_SIZE;
+            GameState.BLOCK_SIZE * _tetrimino__WEBPACK_IMPORTED_MODULE_3__.Tetrimino.TETRIMINO_SIZE;
         this._holdedTetriminoContext = holdedTetriminoField.getContext("2d");
         // クラス名を直接指定して，要素を取得してので，クラス名が変わると動かなくなる．
         this._view.querySelector(".hold-area").appendChild(holdedTetriminoField);
@@ -24410,7 +24460,7 @@ var GameState = /** @class */ (function () {
      * @returns {Field} 初期化されたフィールド
      */
     GameState.prototype.initializeField = function () {
-        return new _field__WEBPACK_IMPORTED_MODULE_0__.Field(GameState.FIELD_COL, GameState.FIELD_ROW);
+        return new _field__WEBPACK_IMPORTED_MODULE_2__.Field(GameState.FIELD_COL, GameState.FIELD_ROW);
     };
     /**
      * テトリミノを初期化する
@@ -24418,8 +24468,8 @@ var GameState = /** @class */ (function () {
      * @returns {Tetrimino} 初期化されたテトリミノ
      */
     GameState.prototype.initializeTetrimino = function () {
-        var tetri_type = Math.floor(Math.random() * _tetrimino__WEBPACK_IMPORTED_MODULE_1__.Tetrimino.TETRIMINO_TYPES_COUNT);
-        return new _tetrimino__WEBPACK_IMPORTED_MODULE_1__.Tetrimino(tetri_type, GameState.START_X - _tetrimino__WEBPACK_IMPORTED_MODULE_1__.Tetrimino.TETRIMINO_SIZE + 2, GameState.START_Y);
+        var tetri_type = Math.floor(Math.random() * _tetrimino__WEBPACK_IMPORTED_MODULE_3__.Tetrimino.TETRIMINO_TYPES_COUNT);
+        return new _tetrimino__WEBPACK_IMPORTED_MODULE_3__.Tetrimino(tetri_type, GameState.START_X - _tetrimino__WEBPACK_IMPORTED_MODULE_3__.Tetrimino.TETRIMINO_SIZE + 2, GameState.START_Y);
     };
     /**
      * 現在のゲームの状態を描画する
@@ -24544,7 +24594,7 @@ var GameState = /** @class */ (function () {
     };
     //this._nextTetriminoをとthis._holdedTetriminoを描画するために使用
     GameState.prototype.drawTetriminoInSubWindow = function (tetrimino, context) {
-        context.clearRect(0, 0, GameState.BLOCK_SIZE * _tetrimino__WEBPACK_IMPORTED_MODULE_1__.Tetrimino.TETRIMINO_SIZE, GameState.BLOCK_SIZE * _tetrimino__WEBPACK_IMPORTED_MODULE_1__.Tetrimino.TETRIMINO_SIZE);
+        context.clearRect(0, 0, GameState.BLOCK_SIZE * _tetrimino__WEBPACK_IMPORTED_MODULE_3__.Tetrimino.TETRIMINO_SIZE, GameState.BLOCK_SIZE * _tetrimino__WEBPACK_IMPORTED_MODULE_3__.Tetrimino.TETRIMINO_SIZE);
         //gameStart()でthis._holdedTetriminoがnullになるので，その場合は何もしない
         if (tetrimino == null)
             return;
@@ -24710,8 +24760,8 @@ var GameState = /** @class */ (function () {
      * @return {boolean} 移動可能かどうか
      */
     GameState.prototype.checkMoveWithinField = function (newTetrimino) {
-        for (var y = 0; y < _tetrimino__WEBPACK_IMPORTED_MODULE_1__.Tetrimino.TETRIMINO_SIZE; y++) {
-            for (var x = 0; x < _tetrimino__WEBPACK_IMPORTED_MODULE_1__.Tetrimino.TETRIMINO_SIZE; x++) {
+        for (var y = 0; y < _tetrimino__WEBPACK_IMPORTED_MODULE_3__.Tetrimino.TETRIMINO_SIZE; y++) {
+            for (var x = 0; x < _tetrimino__WEBPACK_IMPORTED_MODULE_3__.Tetrimino.TETRIMINO_SIZE; x++) {
                 var nx = newTetrimino.x + x;
                 var ny = newTetrimino.y + y;
                 if (newTetrimino.value[y][x]) {
@@ -24734,8 +24784,8 @@ var GameState = /** @class */ (function () {
      *                  重なっていない場合はtrueを返す
      */
     GameState.prototype.checkMoveOverlapping = function (newTetrimino) {
-        for (var y = 0; y < _tetrimino__WEBPACK_IMPORTED_MODULE_1__.Tetrimino.TETRIMINO_SIZE; y++) {
-            for (var x = 0; x < _tetrimino__WEBPACK_IMPORTED_MODULE_1__.Tetrimino.TETRIMINO_SIZE; x++) {
+        for (var y = 0; y < _tetrimino__WEBPACK_IMPORTED_MODULE_3__.Tetrimino.TETRIMINO_SIZE; y++) {
+            for (var x = 0; x < _tetrimino__WEBPACK_IMPORTED_MODULE_3__.Tetrimino.TETRIMINO_SIZE; x++) {
                 var nx = newTetrimino.x + x;
                 var ny = newTetrimino.y + y;
                 if (newTetrimino.value[y][x]) {
@@ -24751,8 +24801,8 @@ var GameState = /** @class */ (function () {
      * テトリミノをゲームフィールド上の所定の位置に固定する
      */
     GameState.prototype.fixTetrimino = function () {
-        for (var y = 0; y < _tetrimino__WEBPACK_IMPORTED_MODULE_1__.Tetrimino.TETRIMINO_SIZE; y++) {
-            for (var x = 0; x < _tetrimino__WEBPACK_IMPORTED_MODULE_1__.Tetrimino.TETRIMINO_SIZE; x++) {
+        for (var y = 0; y < _tetrimino__WEBPACK_IMPORTED_MODULE_3__.Tetrimino.TETRIMINO_SIZE; y++) {
+            for (var x = 0; x < _tetrimino__WEBPACK_IMPORTED_MODULE_3__.Tetrimino.TETRIMINO_SIZE; x++) {
                 if (this._currentTetrimino.value[y][x]) {
                     this._field.value[this._currentTetrimino.y + y][this._currentTetrimino.x + x] = this._currentTetrimino.value[y][x];
                 }
@@ -25170,6 +25220,36 @@ var createGamePlayPage = function () {
 
 /***/ }),
 
+/***/ "./src/views/startPage.ts":
+/*!********************************!*\
+  !*** ./src/views/startPage.ts ***!
+  \********************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "createStartPage": () => (/* binding */ createStartPage)
+/* harmony export */ });
+/* harmony import */ var _components_bootstrapBtn__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../components/bootstrapBtn */ "./src/components/bootstrapBtn.ts");
+
+/**
+ * スタート画面ページを作成する関数
+ * @return {HTMLDivElement} スタート画面ページ全体のdiv要素
+ */
+var createStartPage = function () {
+    var container = document.createElement('div');
+    container.classList.add('bg-lightblue', 'vh-100');
+    container.innerHTML = "\n  <h1 class=\"display-2 font-weight-bold text-center py-5\">TETRIS</h1>\n  ";
+    var startButton = (0,_components_bootstrapBtn__WEBPACK_IMPORTED_MODULE_0__.createBootstrapBtn)('GAME START', 'primary', 'gameStart');
+    var settingsButton = (0,_components_bootstrapBtn__WEBPACK_IMPORTED_MODULE_0__.createBootstrapBtn)('SETTINGS', 'secondary', 'settings');
+    container.append(startButton, settingsButton);
+    return container;
+};
+
+
+/***/ }),
+
 /***/ "data:image/svg+xml,%3csvg xmlns=%27http://www.w3.org/2000/svg%27 fill=%27%23fff%27 width=%278%27 height=%278%27 viewBox=%270 0 8 8%27%3e%3cpath d=%27M2.75 0l-1.5 1.5L3.75 4l-2.5 2.5L2.75 8l4-4-4-4z%27/%3e%3c/svg%3e":
 /*!******************************************************************************************************************************************************************************************************************************!*\
   !*** data:image/svg+xml,%3csvg xmlns=%27http://www.w3.org/2000/svg%27 fill=%27%23fff%27 width=%278%27 height=%278%27 viewBox=%270 0 8 8%27%3e%3cpath d=%27M2.75 0l-1.5 1.5L3.75 4l-2.5 2.5L2.75 8l4-4-4-4z%27/%3e%3c/svg%3e ***!
@@ -25439,8 +25519,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _assets_sounds_gameover_mp3__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./assets/sounds/gameover.mp3 */ "./src/assets/sounds/gameover.mp3");
 /* harmony import */ var _styles_css__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ./styles.css */ "./src/styles.css");
 /* harmony import */ var _models_gameState__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! ./models/gameState */ "./src/models/gameState.ts");
-/* harmony import */ var _views_gamePlayPage__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! ./views/gamePlayPage */ "./src/views/gamePlayPage.ts");
-
 
 
 
@@ -25455,9 +25533,7 @@ __webpack_require__.r(__webpack_exports__);
 
 
 var app = document.querySelector("#app");
-var gamePlayPage = (0,_views_gamePlayPage__WEBPACK_IMPORTED_MODULE_13__.createGamePlayPage)();
-app.appendChild(gamePlayPage);
-var gameState = new _models_gameState__WEBPACK_IMPORTED_MODULE_12__.GameState(gamePlayPage);
+new _models_gameState__WEBPACK_IMPORTED_MODULE_12__.GameState(app);
 
 })();
 
