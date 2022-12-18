@@ -1,3 +1,10 @@
+import "../assets/sounds/rotation.mp3";
+import "../assets/sounds/ground.mp3";
+import "../assets/sounds/clear.mp3";
+import "../assets/sounds/play.mp3";
+import "../assets/sounds/pause.mp3";
+import "../assets/sounds/gameover.mp3";
+
 import { Field } from "./field";
 import { Tetrimino } from "./tetrimino";
 
@@ -204,13 +211,13 @@ export class GameState {
   /**
    * ゲームを再開する
    */
-  public gameRestart(sound: HTMLAudioElement): void {
+  public gameRestart(): void {
     this._gameStatus = GameState.GAME_STATUS.PLAYING;
     clearInterval(this._intervalId);
     this.drawField();
     this._intervalId = this.setDropTetriminoInterval();
-    sound.currentTime = 0;
-    sound.play();
+    GameState.SOUND_EFFECTS.PLAY.currentTime = 0;
+    GameState.SOUND_EFFECTS.PLAY.play();
   }
 
   /**
@@ -236,7 +243,7 @@ export class GameState {
       this.gamePause();
       this.setPlayButton();
     } else if (this._gameStatus === GameState.GAME_STATUS.PAUSE) {
-      this.gameRestart(GameState.SOUND_EFFECTS.PLAY);
+      this.gameRestart();
       this.setPauseButton();
     } else {
       this.gameStart();
@@ -653,6 +660,16 @@ export class GameState {
   }
 
   /**
+   * 落下速度を変化させる
+   * 
+   * @param {number} gameSpeed ブロックの落下速度
+   */
+  private changeGameSpeed(gameSpeed: number): void {
+    clearInterval(this._intervalId);
+    setInterval(() => this.dropTetrimino(), gameSpeed);
+  }
+
+  /**
    * テトリミノが揃ったか確認し，揃った行を削除する．
    * 1行揃うごとにSCORE_INCREASE点加算しスコアを返す
    *
@@ -672,6 +689,8 @@ export class GameState {
       if (fill) {
         line_count++;
         this.clearLine(y);
+        GameState.SOUND_EFFECTS.CLEAR.currentTime = 0;
+        GameState.SOUND_EFFECTS.CLEAR.play();
         y--;
       }
     }
@@ -682,7 +701,7 @@ export class GameState {
       this._gameSpeed > GameState.MAX_TETRIMINO_DROP_SPEED
     ) {
       this._gameSpeed -= 10 * line_count;
-      this.gameRestart(GameState.SOUND_EFFECTS.CLEAR);
+      this.changeGameSpeed(this._gameSpeed);
     }
 
     return score;
