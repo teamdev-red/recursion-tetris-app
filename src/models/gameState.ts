@@ -1,10 +1,3 @@
-import "../assets/sounds/rotation.mp3";
-import "../assets/sounds/ground.mp3";
-import "../assets/sounds/clear.mp3";
-import "../assets/sounds/play.mp3";
-import "../assets/sounds/pause.mp3";
-import "../assets/sounds/gameover.mp3";
-
 import { Field } from "./field";
 import { Tetrimino } from "./tetrimino";
 
@@ -71,7 +64,7 @@ export class GameState {
   ];
 
   private static readonly BODER_COLORS = {
-    WHITE: "#FFFFFF", 
+    WHITE: "#FFFFFF",
     BLACK: "#000000",
   };
 
@@ -138,12 +131,13 @@ export class GameState {
    * ゲームの状態を表す定数
    */
   private static readonly SOUND_EFFECTS = {
-    LOTATION: new Audio("../assets/sounds/rotation.mp3"),
-    GROUND: new Audio("../assets/sounds/ground.mp3"),
-    CLEAR: new Audio("../assets/sounds/clear.mp3"),
-    PLAY: new Audio("../assets/sounds/play.mp3"),
-    PAUSE: new Audio("../assets/sounds/pause.mp3"),
-    GAMEOVER: new Audio("../assets/sounds/gameover.mp3"),
+    //パスを修正する
+    LOTATION: new Audio("./assets/sounds/rotation.mp3"),
+    GROUND: new Audio("./assets/sounds/ground.mp3"),
+    CLEAR: new Audio("./assets/sounds/clear.mp3"),
+    PLAY: new Audio("./assets/sounds/play.mp3"),
+    PAUSE: new Audio("./assets/sounds/pause.mp3"),
+    GAMEOVER: new Audio("./assets/sounds/gameover.mp3"),
   };
 
   /**
@@ -316,11 +310,11 @@ export class GameState {
   private drawField(): void {
     this.clearField();
     this.drawBlocks(
-      this._field.value, 
-      0, 
-      0, 
-      this._context, 
-      GameState.BLOCK_COLORS, 
+      this._field.value,
+      0,
+      0,
+      this._context,
+      GameState.BLOCK_COLORS,
       GameState.BODER_COLORS.BLACK);
     this.drawBlocks(
       this._currentTetrimino.value,
@@ -388,7 +382,7 @@ export class GameState {
       plus++;
     }
     this.drawBlocks(
-      this._currentTetrimino.value, 
+      this._currentTetrimino.value,
       this._currentTetrimino.x,
       this._currentTetrimino.y + plus,
       this._context,
@@ -718,7 +712,7 @@ export class GameState {
 
   /**
    * 落下速度を変化させる
-   * 
+   *
    * @param {number} gameSpeed ブロックの落下速度
    */
   private changeGameSpeed(gameSpeed: number): void {
