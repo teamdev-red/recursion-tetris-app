@@ -11,7 +11,7 @@ export const createTitleArea = (): HTMLDivElement => {
       <div class="d-flex justify-content-center align-items-center">
         <h1 id="game-title" class="text-center py-3 mr-3 mb-0 clickable">TETRIS</h1>
         <div id="pauseButton">
-          <i class="fa-solid fa-circle-play fa-2x text-secondary clickable"></i>
+          <i class="fa-solid fa-circle-pause fa-2x text-secondary clickable"></i>
         </div>
         <div type="button" data-toggle="modal" data-target="#myModal">
           <i class="fa-solid fa-circle-question fa-2x text-secondary clickable ml-2"></i>
