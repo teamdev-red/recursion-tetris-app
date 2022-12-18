@@ -115,7 +115,7 @@ export class GameState {
   /**
    * テトリミノの落下速度の初期値 (ms)
    */
-  private static readonly INITIAL_TETRIMINO_DROP_SPEED = 400;
+  private static INITIAL_TETRIMINO_DROP_SPEED = 400;
 
   /**
    * テトリミノの最大落下速度 (ms)
@@ -152,6 +152,7 @@ export class GameState {
     // ゲーム開始時は，ゲームオーバー状態
     this._gameStatus = GameState.GAME_STATUS.GAMEOVER;
     this.renderStartPage();
+    this.setSelectHandler();
   }
 
   private renderStartPage(): void {
@@ -314,6 +315,29 @@ export class GameState {
       <i class="fa-solid fa-circle-pause fa-2x text-secondary clickable"></i>
       `;
   }
+
+  /**
+   * スタートページで難易度を設定する
+   */
+  private setDifficultyLevel(): void {
+    let difficultyLevel = document.getElementById('difficultyLevel') as HTMLInputElement;
+    if (difficultyLevel.value === 'easy') {
+      GameState.INITIAL_TETRIMINO_DROP_SPEED = 500;
+    } else if (difficultyLevel.value === 'normal') {
+      GameState.INITIAL_TETRIMINO_DROP_SPEED = 400;
+    } else if (difficultyLevel.value === 'hard') {
+      GameState.INITIAL_TETRIMINO_DROP_SPEED = 300;
+    }
+  }
+
+  /**
+   * スタートページの難易度選択欄にonchangeイベントを登録する
+   */
+  private setSelectHandler(): void {
+    let difficultyLevel = document.getElementById('difficultyLevel') as HTMLInputElement;
+    difficultyLevel.onchange = this.setDifficultyLevel;
+  }
+  
   /**
    * フィールドを初期化する
    *
