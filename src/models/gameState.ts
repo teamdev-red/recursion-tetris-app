@@ -1,5 +1,7 @@
 import { createGamePlayPage } from "../views/gamePlayPage";
 import { createStartPage } from "../views/startPage";
+import * as $ from 'jquery';
+
 import { Field } from "./field";
 import { Tetrimino } from "./tetrimino";
 
@@ -168,6 +170,7 @@ export class GameState {
     this.createHoldedTetriminoField();
     this.setKeydownMoveTetriminoHandler();
     this.setKeyDownPauseHandler();
+    this.pauseGameOnModalShow();
     this.setClickHandler();
     document.querySelector("#game-title").addEventListener("click", () => {
       this.renderStartPage();
@@ -268,6 +271,18 @@ export class GameState {
     */
     gameButton.addEventListener("click", () => {
       this.toggleGameStatus();
+    });
+  }
+
+  private pauseGameOnModalShow(): void {
+    $('.modal').on('show.bs.modal', () => {
+      console.log("modal open");
+      this.gamePause();
+    });
+
+    $('.modal').on('hidden.bs.modal', () => {
+      console.log("modal close");
+      this.gameRestart();
     });
   }
 
@@ -406,7 +421,8 @@ export class GameState {
       this._currentTetrimino.y + plus,
       this._context,
       GameState.LANDING_POINT_BLOCK_COLORS,
-      GameState.BODER_COLORS.WHITE)
+      GameState.BODER_COLORS.WHITE
+    );
   }
 
   /**
@@ -487,27 +503,30 @@ export class GameState {
     this.drawField();
   }
 
-    //this._nextTetriminoをとthis._holdedTetriminoを描画するために使用
-    private drawTetriminoInSubWindow(tetrimino: Tetrimino, context: CanvasRenderingContext2D): void {
-      context.clearRect(
-        0,
-        0,
-        GameState.BLOCK_SIZE * Tetrimino.TETRIMINO_SIZE,
-        GameState.BLOCK_SIZE * Tetrimino.TETRIMINO_SIZE,
-      );
+  //this._nextTetriminoをとthis._holdedTetriminoを描画するために使用
+  private drawTetriminoInSubWindow(
+    tetrimino: Tetrimino,
+    context: CanvasRenderingContext2D
+  ): void {
+    context.clearRect(
+      0,
+      0,
+      GameState.BLOCK_SIZE * Tetrimino.TETRIMINO_SIZE,
+      GameState.BLOCK_SIZE * Tetrimino.TETRIMINO_SIZE
+    );
 
       //gameStart()でthis._holdedTetriminoがnullになるので，その場合は何もしない
       if (tetrimino == null) return;
 
-      this.drawBlocks(
-        tetrimino.value,
-        0,
-        0,
-        context,
-        GameState.BLOCK_COLORS,
-        GameState.BODER_COLORS.BLACK,
-      );
-    }
+    this.drawBlocks(
+      tetrimino.value,
+      0,
+      0,
+      context,
+      GameState.BLOCK_COLORS,
+      GameState.BODER_COLORS.BLACK
+    );
+  }
 
   /**
    * scoreフィールドにスコアを表示する
