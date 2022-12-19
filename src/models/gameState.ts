@@ -221,6 +221,7 @@ export class GameState {
   public gameStart(): void {
     this._gameStatus = GameState.GAME_STATUS.PLAYING;
     this._score = 0;
+    this._gameSpeed = GameState.INITIAL_TETRIMINO_DROP_SPEED.normal;
     this._field = this.initializeField();
     this._currentTetrimino = this.initializeTetrimino();
     this.drawField();
@@ -231,6 +232,10 @@ export class GameState {
       this._nextTetriminoContext
     );
     this._holdedTetrimino = null;
+    this.drawTetriminoInSubWindow(
+      this._holdedTetrimino,
+      this._holdedTetriminoContext
+    );
     GameState.SOUND_EFFECTS.PLAY.currentTime = 0;
     GameState.SOUND_EFFECTS.PLAY.play();
     if (this._intervalId) clearInterval(this._intervalId);
@@ -271,8 +276,8 @@ export class GameState {
     let gameButton = this._view.querySelector("#pauseButton");
 
     /*
-   以下のように状態遷移させる
-   PLAYING -> PAUSE
+      以下のように状態遷移させる
+      PLAYING -> PAUSE
       PAUSE -> PLAYING
       GAMEOVER -> PLAYING
     */
@@ -287,9 +292,8 @@ export class GameState {
     });
 
     $('.modal').on('hidden.bs.modal', () => {
-      if(this._gameStatus === GameState.GAME_STATUS.PAUSE){
-        this.gameRestart();
-      }
+      this.setPauseButton();
+      this.gameRestart();
     });
   }
 
