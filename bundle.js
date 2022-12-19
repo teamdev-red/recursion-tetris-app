@@ -24419,6 +24419,7 @@ var GameState = /** @class */ (function () {
     GameState.prototype.gameStart = function () {
         this._gameStatus = GameState.GAME_STATUS.PLAYING;
         this._score = 0;
+        this._gameSpeed = GameState.INITIAL_TETRIMINO_DROP_SPEED.normal;
         this._field = this.initializeField();
         this._currentTetrimino = this.initializeTetrimino();
         this.drawField();
@@ -24426,6 +24427,7 @@ var GameState = /** @class */ (function () {
         this._nextTetrimino = this.initializeTetrimino();
         this.drawTetriminoInSubWindow(this._nextTetrimino, this._nextTetriminoContext);
         this._holdedTetrimino = null;
+        this.drawTetriminoInSubWindow(this._holdedTetrimino, this._holdedTetriminoContext);
         GameState.SOUND_EFFECTS.PLAY.currentTime = 0;
         GameState.SOUND_EFFECTS.PLAY.play();
         if (this._intervalId)
@@ -24466,8 +24468,8 @@ var GameState = /** @class */ (function () {
         //domのIDを直接指定して取得いるので，変更したら動かない
         var gameButton = this._view.querySelector("#pauseButton");
         /*
-       以下のように状態遷移させる
-       PLAYING -> PAUSE
+          以下のように状態遷移させる
+          PLAYING -> PAUSE
           PAUSE -> PLAYING
           GAMEOVER -> PLAYING
         */
@@ -24481,9 +24483,8 @@ var GameState = /** @class */ (function () {
             _this.gamePause();
         });
         jquery__WEBPACK_IMPORTED_MODULE_2__('.modal').on('hidden.bs.modal', function () {
-            if (_this._gameStatus === GameState.GAME_STATUS.PAUSE) {
-                _this.gameRestart();
-            }
+            _this.setPauseButton();
+            _this.gameRestart();
         });
     };
     GameState.prototype.toggleGameStatus = function () {
