@@ -23,7 +23,7 @@ npm run build
 ![tetris-demo](https://user-images.githubusercontent.com/71655442/208423189-12d5978d-1767-4a43-b6fa-d7043be89f96.gif)
 
 ## 期間
-12/10~12/18
+12/10~12/18の1週間ほど
 
 
 ## 使用技術
@@ -71,9 +71,10 @@ npm run build
 テトリスの開発にあたっては[YouTuneの動画](https://www.youtube.com/watch?v=LJlKaTwtSdI)参考にし，開発を進めました．
 
 メンバーの役割は以下の通りです．
-gacchi:テトリスのUIを実装
-yoda: ゲームサウンドなどの各種機能の実装
-atsu: テトリスのゲームのロジックを実装
+
+gacchi:テトリスのUIを実装  
+yoda: ゲームサウンドなどの各種機能の実装  
+atsu: テトリスのゲームのロジックを実装  
 
 
 
