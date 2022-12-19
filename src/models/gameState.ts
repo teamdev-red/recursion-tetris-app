@@ -218,6 +218,7 @@ export class GameState {
     this._gameStatus = GameState.GAME_STATUS.PLAYING;
     this._score = 0;
     this._gameSpeed = GameState.INITIAL_TETRIMINO_DROP_SPEED;
+    console.log(this._gameSpeed);
     this._field = this.initializeField();
     this._currentTetrimino = this.initializeTetrimino();
     this.drawField();
@@ -228,6 +229,10 @@ export class GameState {
       this._nextTetriminoContext
     );
     this._holdedTetrimino = null;
+    this.drawTetriminoInSubWindow(
+      this._holdedTetrimino,
+      this._holdedTetriminoContext
+    );
     GameState.SOUND_EFFECTS.PLAY.currentTime = 0;
     GameState.SOUND_EFFECTS.PLAY.play();
     if (this._intervalId) clearInterval(this._intervalId);
@@ -266,8 +271,8 @@ export class GameState {
     let gameButton = this._view.querySelector("#pauseButton");
 
     /*
-   以下のように状態遷移させる
-   PLAYING -> PAUSE
+      以下のように状態遷移させる
+      PLAYING -> PAUSE
       PAUSE -> PLAYING
       GAMEOVER -> PLAYING
     */
@@ -278,12 +283,11 @@ export class GameState {
 
   private pauseGameOnModalShow(): void {
     $('.modal').on('show.bs.modal', () => {
-      console.log("modal open");
       this.gamePause();
     });
 
     $('.modal').on('hidden.bs.modal', () => {
-      console.log("modal close");
+      this.setPauseButton();
       this.gameRestart();
     });
   }
@@ -337,7 +341,7 @@ export class GameState {
     let difficultyLevel = document.getElementById('difficultyLevel') as HTMLInputElement;
     difficultyLevel.onchange = this.setDifficultyLevel;
   }
-  
+
   /**
    * フィールドを初期化する
    *
