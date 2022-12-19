@@ -1,6 +1,7 @@
+import * as $ from 'jquery';
+
 import { createGamePlayPage } from "../views/gamePlayPage";
 import { createStartPage } from "../views/startPage";
-import * as $ from 'jquery';
 
 import { Field } from "./field";
 import { Tetrimino } from "./tetrimino";
@@ -36,6 +37,7 @@ export class GameState {
   private _intervalId: NodeJS.Timer;
   private _view: HTMLDivElement;
   private _gameSpeed: number;
+  private _initialGameSpeed: number;
 
   /**
    * blockの色
@@ -116,9 +118,9 @@ export class GameState {
    * テトリミノの落下速度の初期値 (ms)
    */
   private static readonly INITIAL_TETRIMINO_DROP_SPEED = {
-    easy: 400,
+    easy: 500,
     normal: 300,
-    hard: 200,
+    hard: 100,
   }
 
   /**
@@ -221,6 +223,7 @@ export class GameState {
   public gameStart(): void {
     this._gameStatus = GameState.GAME_STATUS.PLAYING;
     this._score = 0;
+    this._gameSpeed = this._initialGameSpeed;
     this._field = this.initializeField();
     this._currentTetrimino = this.initializeTetrimino();
     this.drawField();
@@ -231,6 +234,10 @@ export class GameState {
       this._nextTetriminoContext
     );
     this._holdedTetrimino = null;
+    this.drawTetriminoInSubWindow(
+      this._holdedTetrimino,
+      this._holdedTetriminoContext
+    );
     GameState.SOUND_EFFECTS.PLAY.currentTime = 0;
     GameState.SOUND_EFFECTS.PLAY.play();
     if (this._intervalId) clearInterval(this._intervalId);
@@ -271,8 +278,8 @@ export class GameState {
     let gameButton = this._view.querySelector("#pauseButton");
 
     /*
-   以下のように状態遷移させる
-   PLAYING -> PAUSE
+      以下のように状態遷移させる
+      PLAYING -> PAUSE
       PAUSE -> PLAYING
       GAMEOVER -> PLAYING
     */
@@ -287,9 +294,8 @@ export class GameState {
     });
 
     $('.modal').on('hidden.bs.modal', () => {
-      if(this._gameStatus === GameState.GAME_STATUS.PAUSE){
-        this.gameRestart();
-      }
+      this.setPauseButton();
+      this.gameRestart();
     });
   }
 
@@ -322,26 +328,18 @@ export class GameState {
   }
 
   /**
-   * スタートページで難易度を設定する
-   */
-  private setDifficultyLevel(): void {
-    let difficultyLevel = document.getElementById('difficultyLevel') as HTMLInputElement;
-    if (difficultyLevel.value === 'easy') {
-      this._gameSpeed = GameState.INITIAL_TETRIMINO_DROP_SPEED.easy;
-    } else if (difficultyLevel.value === 'normal') {
-      this._gameSpeed = GameState.INITIAL_TETRIMINO_DROP_SPEED.normal;
-    } else if (difficultyLevel.value === 'hard') {
-      this._gameSpeed = GameState.INITIAL_TETRIMINO_DROP_SPEED.hard;
-    }
-  }
-
-  /**
    * スタートページの難易度選択欄にonchangeイベントを登録する
    */
   private setDifficultySelectHandler(): void {
     let difficultyLevel = document.getElementById('difficultyLevel') as HTMLInputElement;
+    this._initialGameSpeed = GameState.INITIAL_TETRIMINO_DROP_SPEED.normal;
+
     difficultyLevel.addEventListener('change', () => {
-      this.setDifficultyLevel();
+        if (difficultyLevel.value === 'easy') {
+          this._initialGameSpeed = GameState.INITIAL_TETRIMINO_DROP_SPEED.easy;
+        } else if (difficultyLevel.value === 'hard') {
+          this._initialGameSpeed = GameState.INITIAL_TETRIMINO_DROP_SPEED.hard;
+        }
     });
   }
 
