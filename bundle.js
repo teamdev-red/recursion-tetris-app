@@ -24321,10 +24321,10 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "GameState": () => (/* binding */ GameState)
 /* harmony export */ });
-/* harmony import */ var _views_gamePlayPage__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../views/gamePlayPage */ "./src/views/gamePlayPage.ts");
-/* harmony import */ var _views_startPage__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../views/startPage */ "./src/views/startPage.ts");
-/* harmony import */ var jquery__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! jquery */ "./node_modules/jquery/dist/jquery.js");
-/* harmony import */ var jquery__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(jquery__WEBPACK_IMPORTED_MODULE_2__);
+/* harmony import */ var jquery__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! jquery */ "./node_modules/jquery/dist/jquery.js");
+/* harmony import */ var jquery__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(jquery__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _views_gamePlayPage__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../views/gamePlayPage */ "./src/views/gamePlayPage.ts");
+/* harmony import */ var _views_startPage__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../views/startPage */ "./src/views/startPage.ts");
 /* harmony import */ var _field__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./field */ "./src/models/field.ts");
 /* harmony import */ var _tetrimino__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./tetrimino */ "./src/models/tetrimino.ts");
 
@@ -24364,7 +24364,7 @@ var GameState = /** @class */ (function () {
     GameState.prototype.renderStartPage = function () {
         var _this = this;
         this._view.innerHTML = "";
-        this._view.appendChild((0,_views_startPage__WEBPACK_IMPORTED_MODULE_1__.createStartPage)());
+        this._view.appendChild((0,_views_startPage__WEBPACK_IMPORTED_MODULE_2__.createStartPage)());
         this.setDifficultySelectHandler();
         document.querySelector("#gameStart").addEventListener("click", function () {
             _this.renderGamePlayPage();
@@ -24373,7 +24373,7 @@ var GameState = /** @class */ (function () {
     GameState.prototype.renderGamePlayPage = function () {
         var _this = this;
         this._view.innerHTML = "";
-        this._view.appendChild((0,_views_gamePlayPage__WEBPACK_IMPORTED_MODULE_0__.createGamePlayPage)());
+        this._view.appendChild((0,_views_gamePlayPage__WEBPACK_IMPORTED_MODULE_1__.createGamePlayPage)());
         this.createGameField();
         this.createNextTetriminoField();
         this.createHoldedTetriminoField();
@@ -24419,7 +24419,7 @@ var GameState = /** @class */ (function () {
     GameState.prototype.gameStart = function () {
         this._gameStatus = GameState.GAME_STATUS.PLAYING;
         this._score = 0;
-        this._gameSpeed = GameState.INITIAL_TETRIMINO_DROP_SPEED.normal;
+        this._gameSpeed = this._initialGameSpeed;
         this._field = this.initializeField();
         this._currentTetrimino = this.initializeTetrimino();
         this.drawField();
@@ -24479,10 +24479,10 @@ var GameState = /** @class */ (function () {
     };
     GameState.prototype.pauseGameOnModalShow = function () {
         var _this = this;
-        jquery__WEBPACK_IMPORTED_MODULE_2__('.modal').on('show.bs.modal', function () {
+        jquery__WEBPACK_IMPORTED_MODULE_0__('.modal').on('show.bs.modal', function () {
             _this.gamePause();
         });
-        jquery__WEBPACK_IMPORTED_MODULE_2__('.modal').on('hidden.bs.modal', function () {
+        jquery__WEBPACK_IMPORTED_MODULE_0__('.modal').on('hidden.bs.modal', function () {
             _this.setPauseButton();
             _this.gameRestart();
         });
@@ -24511,28 +24511,19 @@ var GameState = /** @class */ (function () {
         gameButton.innerHTML = "\n      <i class=\"fa-solid fa-circle-pause fa-2x text-secondary clickable\"></i>\n      ";
     };
     /**
-     * スタートページで難易度を設定する
-     */
-    GameState.prototype.setDifficultyLevel = function () {
-        var difficultyLevel = document.getElementById('difficultyLevel');
-        if (difficultyLevel.value === 'easy') {
-            this._gameSpeed = GameState.INITIAL_TETRIMINO_DROP_SPEED.easy;
-        }
-        else if (difficultyLevel.value === 'normal') {
-            this._gameSpeed = GameState.INITIAL_TETRIMINO_DROP_SPEED.normal;
-        }
-        else if (difficultyLevel.value === 'hard') {
-            this._gameSpeed = GameState.INITIAL_TETRIMINO_DROP_SPEED.hard;
-        }
-    };
-    /**
      * スタートページの難易度選択欄にonchangeイベントを登録する
      */
     GameState.prototype.setDifficultySelectHandler = function () {
         var _this = this;
         var difficultyLevel = document.getElementById('difficultyLevel');
+        this._initialGameSpeed = GameState.INITIAL_TETRIMINO_DROP_SPEED.normal;
         difficultyLevel.addEventListener('change', function () {
-            _this.setDifficultyLevel();
+            if (difficultyLevel.value === 'easy') {
+                _this._initialGameSpeed = GameState.INITIAL_TETRIMINO_DROP_SPEED.easy;
+            }
+            else if (difficultyLevel.value === 'hard') {
+                _this._initialGameSpeed = GameState.INITIAL_TETRIMINO_DROP_SPEED.hard;
+            }
         });
     };
     /**
@@ -25018,9 +25009,9 @@ var GameState = /** @class */ (function () {
      * テトリミノの落下速度の初期値 (ms)
      */
     GameState.INITIAL_TETRIMINO_DROP_SPEED = {
-        easy: 400,
+        easy: 500,
         normal: 300,
-        hard: 200,
+        hard: 100,
     };
     /**
      * テトリミノの最大落下速度 (ms)
