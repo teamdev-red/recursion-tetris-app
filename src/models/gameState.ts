@@ -116,9 +116,9 @@ export class GameState {
    * テトリミノの落下速度の初期値 (ms)
    */
   private static readonly INITIAL_TETRIMINO_DROP_SPEED = {
-    easy: 400,
+    easy: 500,
     normal: 300,
-    hard: 200,
+    hard: 100,
   }
 
   /**
